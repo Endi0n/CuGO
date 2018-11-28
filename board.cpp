@@ -19,3 +19,15 @@ void move_element_board(board_t& board, pos_t p1, pos_t p2) {
     place_element_board(board, p2, element_t.EMPTY);
     board.moves++;
 }
+
+void draw_board_lines(board_t&);
+
+void draw_board_element(pos_t, element_t);
+
+void draw_board_elements(board_t&);
+
+
+void render_board(board_t& board) {
+    draw_board_lines();
+    draw_board_elements();
+}
