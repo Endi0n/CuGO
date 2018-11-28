@@ -24,6 +24,8 @@ struct board_t {
 
 board_t* create_board(uint_t);
 
+void delete_board(board_t*);
+
 void place_piece_board(board_t*, pos_t, piece_e);
 
 void move_piece_board(board_t*, pos_t, pos_t);

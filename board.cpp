@@ -14,6 +14,14 @@ board_t* create_board(uint_t length) {
     return board;
 }
 
+void delete_board(board_t* board) {
+    // Oc
+    for (uint_t i = 0; i < board->length; i++)
+        delete[] board->piece[i];
+    delete[] board->piece;
+    delete board;
+}
+
 void place_piece_board(board_t *board, pos_t p, piece_e e) {
     // Ot
     board->piece[p.x][p.y] = e;
