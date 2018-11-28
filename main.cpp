@@ -49,6 +49,7 @@ int main() {
             exit_game_loop = true;
     } while (!exit_game_loop);
 
+    delete_board(board);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
