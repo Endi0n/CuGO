@@ -20,6 +20,7 @@ void list_delete_first(STRUCT_NAME(TYPE) *list) {
 void list_delete(STRUCT_NAME(TYPE) *list) {
     while (!list_is_empty(list))
         list_delete_first(list);
+    delete list;
 }
 
 void list_add(STRUCT_NAME(TYPE) *list, TYPE value) {
