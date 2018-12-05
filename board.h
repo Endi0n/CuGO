@@ -1,8 +1,6 @@
 #ifndef CUGO_BOARD_H
 #define CUGO_BOARD_H
 
-#include <stdint.h>
-
 typedef unsigned int uint_t;
 
 enum piece_e {
@@ -22,14 +20,14 @@ struct board_t {
     uint_t moves;
 };
 
-board_t* create_board(uint_t);
+board_t* board_create(uint_t);
 
-void delete_board(board_t*);
+void board_delete(board_t*);
 
-void place_piece_board(board_t*, pos_t, piece_e);
+void board_place_piece(board_t*, pos_t, piece_e);
 
-void move_piece_board(board_t*, pos_t, pos_t);
+void board_move_piece(board_t*, pos_t, pos_t);
 
-void render_board(board_t);
+void board_render(board_t);
 
 #endif // CUGO_BOARD_H
