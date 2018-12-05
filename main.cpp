@@ -34,13 +34,13 @@ int main() {
 
     bool exit_game_loop = false;
 
-    board_t *board = create_board(8);
+    board_t *board = board_create(8);
 
     do {
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
 
-        // render_board(board);
+        // board_render(board);
 
         SDL_RenderPresent(renderer);
 
@@ -49,7 +49,7 @@ int main() {
             exit_game_loop = true;
     } while (!exit_game_loop);
 
-    delete_board(board);
+    board_delete(board);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();

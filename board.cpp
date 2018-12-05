@@ -1,6 +1,6 @@
 #include "board.h"
 
-board_t* create_board(uint_t length) {
+board_t* board_create(uint_t length) {
     // Oc
     board_t *board = new board_t;
 
@@ -14,7 +14,7 @@ board_t* create_board(uint_t length) {
     return board;
 }
 
-void delete_board(board_t* board) {
+void board_delete(board_t* board) {
     // Oc
     for (uint_t i = 0; i < board->length; i++)
         delete[] board->piece[i];
@@ -22,26 +22,26 @@ void delete_board(board_t* board) {
     delete board;
 }
 
-void place_piece_board(board_t *board, pos_t p, piece_e e) {
+void board_place_piece(board_t *board, pos_t p, piece_e e) {
     // Ot
     board->piece[p.x][p.y] = e;
     board->moves++;
 }
 
-void move_piece_board(board_t *board, pos_t p1, pos_t p2) {
+void board_move_piece(board_t *board, pos_t p1, pos_t p2) {
     // Ot
-    place_piece_board(board, p1, board->piece[p2.x][p2.y]);
-    place_piece_board(board, p2, EMPTY);
+    board_place_piece(board, p1, board->piece[p2.x][p2.y]);
+    board_place_piece(board, p2, EMPTY);
     board->moves++;
 }
 
-void draw_board_lines(board_t*);
+void board_draw_lines(board_t*);
 
-void draw_board_piece(pos_t, piece_e);
+void board_draw_piece(pos_t, piece_e);
 
-void draw_board_pieces(board_t*);
+void board_draw_pieces(board_t*);
 
-void render_board(board_t *board) {
-    // draw_board_lines(board);
-    // draw_board_pieces(board);
+void board_render(board_t *board) {
+    // board_draw_lines(board);
+    // board_draw_pieces(board);
 }
