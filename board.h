@@ -1,22 +1,18 @@
 #ifndef CUGO_BOARD_H
 #define CUGO_BOARD_H
 
-typedef unsigned int uint_t;
+#include "point.h"
+#include "list_point.h"
 
-enum piece_e {
-    EMPTY = 0,
-    PLAYER1 = 1,
-    PLAYER2 = 2
-};
-
-struct pos_t {
-    uint_t x;
-    uint_t y;
+enum player_e {
+    PLAYER1 = 0,
+    PLAYER2 = 1
 };
 
 struct board_t {
-    piece_e **piece;
     uint_t length;
+    list_point_t *player1_pieces;
+    list_point_t *player2_pieces;
     uint_t moves;
 };
 
@@ -24,9 +20,9 @@ board_t* board_create(uint_t);
 
 void board_delete(board_t*);
 
-void board_place_piece(board_t*, pos_t, piece_e);
+void board_place_piece(board_t*, player_e, point_t);
 
-void board_move_piece(board_t*, pos_t, pos_t);
+void board_move_piece(board_t*, player_e, point_t, point_t);
 
 void board_render(board_t);
 
