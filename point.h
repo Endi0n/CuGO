@@ -4,8 +4,8 @@
 typedef unsigned int uint_t;
 
 struct point_t {
-    uint_t x;
-    uint_t y;
+    int x;
+    int y;
 };
 
 #endif // CUGO_POINT_H
