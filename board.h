@@ -24,6 +24,4 @@ void board_place_piece(board_t*, player_e, point_t);
 
 void board_move_piece(board_t*, player_e, point_t, point_t);
 
-void board_render(board_t);
-
 #endif // CUGO_BOARD_H

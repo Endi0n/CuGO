@@ -1,58 +1,63 @@
 #include <SDL2/SDL.h>
+#include "dimensions.h"
 #include "board.h"
+#include "render.h"
 
-const int WIDTH = 800, HEIGHT = 600;
+SDL_Window *window;
+SDL_Renderer *renderer;
 
-SDL_Window* create_game_window() {
-    // Oc
+SDL_Color colors[] = {
+    SDL_Color {255, 255, 255, 255},
+    SDL_Color {255, 0, 0, 255},
+    SDL_Color {0, 0, 255, 255}
+};
+
+board_t *board;
+
+void init_game() {
     SDL_Init(SDL_INIT_EVERYTHING);
+    window = render_create_window();
+    renderer = render_create_renderer(window);
 
-    return SDL_CreateWindow(
-        "CuGO Game",
-        SDL_WINDOWPOS_UNDEFINED,
-        SDL_WINDOWPOS_UNDEFINED,
-        WIDTH,
-        HEIGHT,
-        SDL_WINDOW_ALLOW_HIGHDPI 
-    );
+    board = board_create(8);
 }
 
-SDL_Renderer* create_game_renderer(SDL_Window *window) {
-    // Oc
-    SDL_Renderer *renderer;
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    SDL_RenderSetLogicalSize(renderer, WIDTH, HEIGHT);
-
-    return renderer;
-}
-
-int main() {
-    // Oc
-    SDL_Window *window = create_game_window();
-    SDL_Renderer *renderer = create_game_renderer(window); 
-    SDL_Event windowEvent;
-
-    bool exit_game_loop = false;
-
-    board_t *board = board_create(8);
-
-    do {
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-        SDL_RenderClear(renderer);
-
-        // board_render(board);
-
-        SDL_RenderPresent(renderer);
-
-        SDL_WaitEvent(&windowEvent);
-        if (windowEvent.type == SDL_QUIT)
-            exit_game_loop = true;
-    } while (!exit_game_loop);
-
+void deinit_game() {
     board_delete(board);
+
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
+}
 
+void handle_mouse_click(SDL_MouseButtonEvent& mouse);
+
+int main() {
+    init_game();
+
+    SDL_Event window_event;
+    bool exit_game_loop = false;
+
+    render_clear(renderer);
+    SDL_RenderPresent(renderer);
+
+    do {
+        render_clear(renderer, {230, 230, 230, 255});
+        render_board(renderer, board, colors);
+
+        SDL_WaitEvent(&window_event);
+        switch (window_event.type) {
+            case SDL_QUIT:
+                exit_game_loop = true;
+                break;
+            case SDL_MOUSEBUTTONDOWN:
+                // handle_mouse_click(window_event.button);
+                break;
+        }
+
+        SDL_RenderPresent(renderer);
+    } while (!exit_game_loop);
+
+    deinit_game();
     return 0;
 }
