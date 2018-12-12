@@ -20,7 +20,11 @@ board_t* board_create(uint_t);
 
 void board_delete(board_t*);
 
-void board_place_piece(board_t*, player_e, point_t);
+player_e board_current_player(board_t*);
+
+player_e board_opponent(board_t *);
+
+bool board_place_piece(board_t*, player_e, point_t);
 
 void board_move_piece(board_t*, player_e, point_t, point_t);
 

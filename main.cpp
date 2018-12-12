@@ -2,6 +2,7 @@
 #include "dimensions.h"
 #include "board.h"
 #include "render.h"
+
 #include <iostream>
 using namespace std;
 
@@ -14,6 +15,8 @@ SDL_Color colors[] = {
 };
 
 board_t *board;
+
+bool game_over = false;
 
 void init_game() {
     SDL_Init(SDL_INIT_EVERYTHING);
@@ -31,39 +34,31 @@ void deinit_game() {
     SDL_Quit();
 }
 
-bool inside_board(int x_board, int y_board)
-{
-    return x_board>=0 && x_board<board->length&& y_board>=0 && y_board<board->length;
-}
-
-void get_board_coord(int x_screen, int y_screen, int &x_board, int &y_board)
-{
-    x_screen=x_screen-BOARD_OFFSET_X;
-    x_board=x_screen/BOARD_CELL_SIZE;
-    y_screen=y_screen-BOARD_OFFSET_Y;
-    y_board=y_screen/BOARD_CELL_SIZE;
-
-}
-
 void handle_mouse_click(SDL_MouseButtonEvent &mouse) {
-        if(true)
-        {
-            int x=mouse.x, y=mouse.y;
-            int x_board, y_board;
-            get_board_coord(x, y, x_board, y_board);
+    // Ot
+    if (game_over) return;
 
-            list_point_t *list = (board->moves % 2 == 0) ? board->player1_pieces : board->player2_pieces;
-            point_t pos = {x_board, y_board};
-            list_append(list, pos);
-            board->moves++;
-        }
+    if (mouse.button != SDL_BUTTON_LEFT) return;
+
+    if (board->moves < board->length * 2) {
+        // Initial placing
+        board_place_piece(board, board_current_player(board), {
+            // (Relative position from board offset / Cell size) = Position of the click in the 0..<board.length grid
+            (mouse.x - BOARD_OFFSET_X) / BOARD_CELL_SIZE,
+            (mouse.y -BOARD_OFFSET_Y) / BOARD_CELL_SIZE
+        });
+    } else {
+        // Moves 
+    }
+
+    if (int aux = board_player_defeated(board, board_current_player(board))) {
+        cout << "Player " << board_current_player(board) << " was defeated. Score for opponent " << aux << '.' << endl;
+        game_over = true;
+    }
 }
 
 int main(int argv, char **args) {
     init_game();
-    point_t pos = {0, 0}, pos2={1,1};
-    list_append(board->player1_pieces, pos);
-    list_append(board->player2_pieces, pos2);
 
     SDL_Event window_event;
     bool exit_game_loop = false;
