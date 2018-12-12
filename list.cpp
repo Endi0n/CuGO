@@ -6,10 +6,6 @@ void list_init(LIST_NAME(TYPE) *&list) {
     list->length = 0;
 }
 
-inline bool list_is_empty(LIST_NAME(TYPE) *list) {
-    return (list->length == 0);
-}
-
 void list_prepend(LIST_NAME(TYPE) *list, const TYPE &value) {
     NODE_NAME(TYPE) *node = new NODE_NAME(TYPE);
     node->value = value;

@@ -17,7 +17,7 @@ struct LIST_NAME(TYPE) {
 
 void list_init(LIST_NAME(TYPE)*&);
 
-inline bool list_is_empty(LIST_NAME(TYPE)*);
+inline bool list_is_empty(LIST_NAME(TYPE) *list) { return (list->length == 0); }
 
 void list_prepend(LIST_NAME(TYPE)*, const TYPE&);
 
