@@ -2,6 +2,8 @@
 #include "dimensions.h"
 #include "board.h"
 #include "render.h"
+#include <iostream>
+using namespace std;
 
 SDL_Window *window;
 SDL_Renderer *renderer;
@@ -29,7 +31,33 @@ void deinit_game() {
     SDL_Quit();
 }
 
-void handle_mouse_click(SDL_MouseButtonEvent& mouse);
+bool inside_board(int x_board, int y_board)
+{
+    return x_board>=0 && x_board<board->length&& y_board>=0 && y_board<board->length;
+}
+
+void get_board_coord(int x_screen, int y_screen, int &x_board, int &y_board)
+{
+    x_screen=x_screen-BOARD_OFFSET_X;
+    x_board=x_screen/BOARD_CELL_SIZE;
+    y_screen=y_screen-BOARD_OFFSET_Y;
+    y_board=y_screen/BOARD_CELL_SIZE;
+
+}
+
+void handle_mouse_click(SDL_MouseButtonEvent &mouse) {
+        if(true)
+        {
+            int x=mouse.x, y=mouse.y;
+            int x_board, y_board;
+            get_board_coord(x, y, x_board, y_board);
+
+            list_point_t *list = (board->moves % 2 == 0) ? board->player1_pieces : board->player2_pieces;
+            point_t pos = {x_board, y_board};
+            list_append(list, pos);
+            board->moves++;
+        }
+}
 
 int main(int argv, char **args) {
     init_game();
@@ -50,7 +78,7 @@ int main(int argv, char **args) {
                 exit_game_loop = true;
                 break;
             case SDL_MOUSEBUTTONDOWN:
-                // handle_mouse_click(window_event.button);
+                handle_mouse_click(window_event.button);
                 break;
         }
 
