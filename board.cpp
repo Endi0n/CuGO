@@ -19,15 +19,7 @@ void board_delete(board_t *board) {
     delete board;
 }
 
-player_e board_current_player(board_t *board) {
-    return (player_e)(board->moves % 2);
-}
-
-player_e board_opponent(board_t *board) {
-    return (player_e)((board->moves + 1) % 2);
-}
-
-bool board_valid_point(board_t *board, point_t pos) {
+inline bool board_valid_point(board_t *board, point_t pos) {
     return (
         0 <= pos.x && pos.x < board->length &&
         0 <= pos.y && pos.y < board->length
