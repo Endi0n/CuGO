@@ -10,7 +10,7 @@ SDL_Window* render_create_window() {
         SDL_WINDOWPOS_UNDEFINED,
         WIDTH,
         HEIGHT,
-        SDL_WINDOW_ALLOW_HIGHDPI 
+        SDL_WINDOW_ALLOW_HIGHDPI
     );
 }
 
@@ -44,7 +44,7 @@ void render_filled_circle(SDL_Renderer *renderer, int cx, int cy, int radius) {
 
             {cx + y, cy + x},
             {cx - y, cy + x},
-            
+
             {cx - x, cy - y},
             {cx + x, cy - y},
 
@@ -59,7 +59,7 @@ void render_filled_circle(SDL_Renderer *renderer, int cx, int cy, int radius) {
             err += dy;
             dy += 2;
         }
-        
+
         if (err > 0) {
             x--;
             dx += 2;
@@ -68,14 +68,43 @@ void render_filled_circle(SDL_Renderer *renderer, int cx, int cy, int radius) {
     }
 }
 
-void render_board_grid(SDL_Renderer*, board_t*, SDL_Color);
+void render_board_cell(SDL_Renderer *renderer, int x_board, int y_board, SDL_Color color) {
+    int sq_stg, sq_sus;
+    sq_stg=BOARD_OFFSET_X+x_board*BOARD_CELL_SIZE;
+    sq_sus=BOARD_OFFSET_Y+y_board*BOARD_CELL_SIZE;
+    SDL_SetRenderDrawColor(renderer, color);
+    SDL_Rect rect = {sq_stg, sq_sus, BOARD_CELL_SIZE, BOARD_CELL_SIZE};
+    SDL_RenderFillRect(renderer, &rect);
+}
 
-void render_board_piece(SDL_Renderer*, point_t);
+void render_board_grid(SDL_Renderer *renderer, board_t *board) {
+    for(int x_board=0; x_board<board->length; x_board++) {
+        for(int y_board=0; y_board<board->length; y_board++) {
+                if((x_board+y_board) % 2 == 0)
+                    render_board_cell(renderer, x_board, y_board, {255, 204, 102, 255});
+                else
+                    render_board_cell(renderer, x_board, y_board, {153, 102, 0, 255});
+        }
+    }
+}
 
-void render_board_pieces(SDL_Renderer*, list_point_t*, SDL_Color);
+void render_board_piece(SDL_Renderer *renderer, point_t pos) {
+    int left, top;
+    left=BOARD_OFFSET_X+BOARD_CELL_SIZE*pos.x;
+    top=BOARD_OFFSET_Y+BOARD_CELL_SIZE*pos.y;
+    left=left+BOARD_CELL_SIZE/2;
+    top=top+BOARD_CELL_SIZE/2;
+    render_filled_circle(renderer, left, top, BOARD_CELL_SIZE/3);
+}
 
-void render_board(SDL_Renderer* renderer, board_t *board, const SDL_Color colors[3]) {
-    // board_draw_grid(renderer, board, colors[0]);
-    // board_draw_pieces(renderer, board->player1_pieces, colors[1]);
-    // board_draw_pieces(renderer, board->player2_pieces, colors[2]);
+void render_board_pieces(SDL_Renderer *renderer, list_point_t *list, SDL_Color color) {
+    SDL_SetRenderDrawColor(renderer, color);
+    for (list_node_point_t *node = list->first; node; node = node->next)
+        render_board_piece(renderer, node->value);
+}
+
+void render_board(SDL_Renderer* renderer, board_t *board, const SDL_Color colors[2]) {
+    render_board_grid(renderer, board);
+    render_board_pieces(renderer, board->player1_pieces, colors[0]);
+    render_board_pieces(renderer, board->player2_pieces, colors[1]);
 }
