@@ -10,6 +10,6 @@ void SDL_SetRenderDrawColor(SDL_Renderer*, SDL_Color);
 
 void render_clear(SDL_Renderer*, SDL_Color);
 
-void render_board(SDL_Renderer*, board_t*, const SDL_Color[3]);
+void render_board(SDL_Renderer*, board_t*, const SDL_Color[2]);
 
 #endif // CUGO_RENDER_H

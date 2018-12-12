@@ -7,9 +7,8 @@ SDL_Window *window;
 SDL_Renderer *renderer;
 
 SDL_Color colors[] = {
-    SDL_Color {255, 255, 255, 255},
-    SDL_Color {255, 0, 0, 255},
-    SDL_Color {0, 0, 255, 255}
+    SDL_Color {0, 0, 0, 255},
+    SDL_Color {255, 255, 255, 255}
 };
 
 board_t *board;
@@ -32,17 +31,17 @@ void deinit_game() {
 
 void handle_mouse_click(SDL_MouseButtonEvent& mouse);
 
-int main() {
+int main(int argv, char **args) {
     init_game();
+    point_t pos = {0, 0}, pos2={1,1};
+    list_append(board->player1_pieces, pos);
+    list_append(board->player2_pieces, pos2);
 
     SDL_Event window_event;
     bool exit_game_loop = false;
 
-    render_clear(renderer);
-    SDL_RenderPresent(renderer);
-
     do {
-        render_clear(renderer, {230, 230, 230, 255});
+        render_clear(renderer, {255, 255, 204, 255});
         render_board(renderer, board, colors);
 
         SDL_WaitEvent(&window_event);
