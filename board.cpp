@@ -21,31 +21,54 @@ void board_delete(board_t *board) {
     delete board;
 }
 
-bool board_point_valid(board_t *board, point_t pos) {
+player_e board_current_player(board_t *board) {
+    return (player_e)(board->moves % 2);
+}
+
+player_e board_opponent(board_t *board) {
+    return (player_e)((board->moves + 1) % 2);
+}
+
+bool board_valid_point(board_t *board, point_t pos) {
     return (
         0 <= pos.x && pos.x < board->length &&
         0 <= pos.y && pos.y < board->length
     );
 }
 
+bool board_place_piece(board_t *board, player_e player, point_t pos) {
+    if (!board_valid_point(board, pos)) return false;
+
+    if (list_contains(board->player1_pieces, pos) || list_contains(board->player2_pieces, pos))
+        return false;
+
+    // TODO check if suicidal move
+
+    list_append((player == PLAYER1) ? board->player1_pieces : board->player2_pieces, pos);
+    board->moves++;
+    return true; // valid placement
+}
+
 int board_player_defeated(board_t *board, player_e player) {
     // Oc
-    static point_t directions[] = {
+    static const point_t directions[] = {
         {0, -1},
         {1, 0},
         {0, 1},
         {-1, 0}
     };
 
+    list_point_t *list1, *list2;
+    if (player == PLAYER1) {
+        list1 = board->player1_pieces;
+        list2 = board->player2_pieces;
+    }  else {
+        list1 = board->player2_pieces;
+        list2 = board->player1_pieces;
+    }
+
     list_point_t *visited;
     list_init(visited);
-
-    list_point_t *list1 = board->player1_pieces, *list2 = board->player2_pieces;    
-    if (player == PLAYER2) {
-        list_point_t *aux = list1;
-        list1 = list2;
-        list2 = aux;
-    }
 
     // Check all groups of pieces
     for (list_node_point_t *node = list1->first; node; node = node->next) {
@@ -64,10 +87,10 @@ int board_player_defeated(board_t *board, player_e player) {
             for (uint_t i = 0; i < sizeof(directions) / sizeof(point_t); ++i) {
                 point_t new_pos = {current_pos.x + directions[i].x, current_pos.y + directions[i].y};
 
-                if (!board_point_valid(board, new_pos) || list_find_node(start_node->next, new_pos)) continue;
+                if (!board_valid_point(board, new_pos) || list_find_node(start_node, new_pos)) continue;
 
                 if (list_contains(list1, new_pos)) list_append(visited, new_pos);
-                else can_move = !list_contains(list2, new_pos);
+                else can_move = can_move ? true : !list_contains(list2, new_pos);
             }
         }
 
