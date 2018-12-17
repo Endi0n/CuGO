@@ -36,10 +36,38 @@ bool board_place_piece(board_t *board, player_e player, point_t pos) {
 
     // TODO check if suicidal move
 
-    list_append((player == PLAYER1) ? board->player1_pieces : board->player2_pieces, pos);
+    list_append(board_player_list(board, player), pos);
     board->moves++;
     return true; // valid placement
 }
+
+bool board_move_piece(board_t *board, player_e player, point_t src_piece, point_t dst) {
+    static const point_t directions[] = {
+        {0, -1},
+        {1, 0},
+        {0, 1},
+        {-1, 0}
+    };
+
+    bool valid_replace = false;
+    for (uint_t i = 0; i < sizeof(directions) / sizeof(point_t); ++i) {
+        point_t new_pos = {src_piece.x + directions[i].x, src_piece.y + directions[i].y};
+        if (new_pos.x == dst.x && new_pos.y == dst.y) {
+            valid_replace = true;
+            break;
+        }
+    }
+
+    list_point_t *player_pieces = board_player_list(board, player);
+
+    if(!valid_replace || !list_contains(player_pieces, src_piece) || !board_place_piece(board, player, dst))
+        return false; // invalid move
+        
+    list_delete(player_pieces, src_piece);
+    // board->moves++ already done in board_place_piece
+    return true; // valid placement
+}
+
 
 int board_player_defeated(board_t *board, player_e player) {
     // Oc
@@ -50,14 +78,8 @@ int board_player_defeated(board_t *board, player_e player) {
         {-1, 0}
     };
 
-    list_point_t *list1, *list2;
-    if (player == PLAYER1) {
-        list1 = board->player1_pieces;
-        list2 = board->player2_pieces;
-    }  else {
-        list1 = board->player2_pieces;
-        list2 = board->player1_pieces;
-    }
+    list_point_t *list1 = board_player_list(board, player),
+        *list2 = board_player_list(board, (player_e)((player + 1) % 2));
 
     list_point_t *visited;
     list_init(visited);
