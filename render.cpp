@@ -9,8 +9,8 @@ SDL_Window* render_create_window() {
         "CuGO Game",
         SDL_WINDOWPOS_UNDEFINED,
         SDL_WINDOWPOS_UNDEFINED,
-        WIDTH,
-        HEIGHT,
+        WINDOW_WIDTH,
+        WINDOW_HEIGHT,
         SDL_WINDOW_ALLOW_HIGHDPI
     );
 }
@@ -18,7 +18,7 @@ SDL_Window* render_create_window() {
 SDL_Renderer* render_create_renderer(SDL_Window *window) {
     SDL_Renderer *renderer;
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    SDL_RenderSetLogicalSize(renderer, WIDTH, HEIGHT);
+    SDL_RenderSetLogicalSize(renderer, WINDOW_WIDTH, WINDOW_HEIGHT);
     return renderer;
 }
 
@@ -44,7 +44,13 @@ void render_text(SDL_Renderer *renderer, char *text, uint_t size, SDL_Rect rect,
 }
 
 void render_logo(SDL_Renderer *renderer) {
-    render_text(renderer, "CuGO", 14, {330, 0, 150, 100}, {0, 0, 0});
+    render_text(
+        renderer,
+        "CuGO",
+        LOGO_SIZE,
+        {LOGO_OFFSET_X, LOGO_OFFSET_Y, LOGO_WIDTH, LOGO_HEIGHT},
+        {0, 0, 0} // Render with black color 
+    );
 }
 
 void render_filled_circle(SDL_Renderer *renderer, int cx, int cy, int radius) {
