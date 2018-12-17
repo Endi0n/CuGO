@@ -23,9 +23,12 @@ void board_delete(board_t*);
 inline player_e board_current_player(board_t *board) { return (player_e)(board->moves % 2); }
 inline player_e board_opponent(board_t *board) { return (player_e)((board->moves + 1) % 2); }
 
-bool board_place_piece(board_t*, player_e, point_t);
+inline list_point_t* board_player_list(board_t *board, player_e player) {
+    return ((player == PLAYER1) ? board->player1_pieces : board->player2_pieces);
+}
 
-void board_move_piece(board_t*, player_e, point_t, point_t);
+bool board_place_piece(board_t*, player_e, point_t);
+bool board_move_piece(board_t*, player_e, point_t, point_t);
 
 int board_player_defeated(board_t*, player_e);
 

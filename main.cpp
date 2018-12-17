@@ -2,8 +2,10 @@
 #include <SDL2/SDL_ttf.h>
 
 #include "dimensions.h"
-#include "board.h"
 #include "render.h"
+#include "board.h"
+#include "list_point.h"
+
 
 #include <iostream>
 using namespace std;
@@ -40,21 +42,38 @@ void deinit_game() {
     SDL_Quit();
 }
 
-void handle_mouse_click(SDL_MouseButtonEvent &mouse) {
+point_t board_position(SDL_MouseButtonEvent &mouse) {
     // Ot
+    return {
+        // (Relative position from board offset / Cell size) = Position of the click in the 0..<board.length grid
+        (mouse.x - BOARD_OFFSET_X) / BOARD_CELL_SIZE,
+        (mouse.y -BOARD_OFFSET_Y) / BOARD_CELL_SIZE
+    };
+}
+
+void handle_mouse_click(SDL_MouseButtonEvent &mouse) {
     if (game_over) return;
 
     if (mouse.button != SDL_BUTTON_LEFT) return;
 
     if (board->moves < board->length * 2) {
         // Initial placing
-        board_place_piece(board, board_current_player(board), {
-            // (Relative position from board offset / Cell size) = Position of the click in the 0..<board.length grid
-            (mouse.x - BOARD_OFFSET_X) / BOARD_CELL_SIZE,
-            (mouse.y -BOARD_OFFSET_Y) / BOARD_CELL_SIZE
-        });
+        board_place_piece(board, board_current_player(board), board_position(mouse));
     } else {
         // Moves 
+        static point_t piece;
+        static bool selected = false;
+
+        if (!selected) {
+            point_t pos = board_position(mouse);
+            if (list_contains(board_player_list(board, board_current_player(board)), pos)) {
+                piece = pos;
+                selected = true;
+            }
+        } else {
+            selected = false;
+            board_move_piece(board, board_current_player(board), piece, board_position(mouse));
+        }
     }
 
     if (int aux = board_player_defeated(board, board_current_player(board))) {
