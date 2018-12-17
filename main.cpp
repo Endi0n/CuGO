@@ -12,6 +12,8 @@ SDL_Window *window;
 SDL_Renderer *renderer;
 
 SDL_Color colors[] = {
+    {204, 223, 255, 255},
+    // previous bg: {255, 255, 204, 255},
     SDL_Color {0, 0, 0, 255},
     SDL_Color {255, 255, 255, 255}
 };
@@ -68,8 +70,8 @@ int main(int argv, char **args) {
     bool exit_game_loop = false;
 
     do {
-        render_clear(renderer, {255, 255, 204, 255});
-        render_board(renderer, board, colors);
+        render_clear(renderer, colors[0]);
+        render_board(renderer, board, colors + 1);
         render_logo(renderer);
 
         SDL_WaitEvent(&window_event);
