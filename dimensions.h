@@ -4,8 +4,15 @@
 // Dimensions are to be adjusted
 
 const int
-    WIDTH = 800,
-    HEIGHT = 600,
+    WINDOW_WIDTH = 800,
+    WINDOW_HEIGHT = 600,
+
+    LOGO_WIDTH = 150,
+    LOGO_HEIGHT = 100,
+    LOGO_SIZE = 14,
+    LOGO_OFFSET_X = 330,
+    LOGO_OFFSET_Y = 10,
+
     BOARD_CELL_SIZE = 50,
     BOARD_OFFSET_X = 200,
     BOARD_OFFSET_Y = 120;
