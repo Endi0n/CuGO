@@ -1,4 +1,6 @@
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
+
 #include "dimensions.h"
 #include "board.h"
 #include "render.h"
@@ -20,6 +22,8 @@ bool game_over = false;
 
 void init_game() {
     SDL_Init(SDL_INIT_EVERYTHING);
+    TTF_Init();
+
     window = render_create_window();
     renderer = render_create_renderer(window);
 
@@ -66,6 +70,7 @@ int main(int argv, char **args) {
     do {
         render_clear(renderer, {255, 255, 204, 255});
         render_board(renderer, board, colors);
+        render_logo(renderer);
 
         SDL_WaitEvent(&window_event);
         switch (window_event.type) {

@@ -8,6 +8,6 @@ const int
     HEIGHT = 600,
     BOARD_CELL_SIZE = 50,
     BOARD_OFFSET_X = 200,
-    BOARD_OFFSET_Y = 100;
+    BOARD_OFFSET_Y = 120;
 
 #endif // CUGO_DIMENSION_h

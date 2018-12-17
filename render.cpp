@@ -1,4 +1,5 @@
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 #include "dimensions.h"
 #include "board.h"
 #include "list_point.h"
@@ -28,6 +29,22 @@ void SDL_SetRenderDrawColor(SDL_Renderer *renderer, SDL_Color color) {
 void render_clear(SDL_Renderer *renderer, SDL_Color color) {
     SDL_SetRenderDrawColor(renderer, color);
     SDL_RenderClear(renderer);
+}
+
+void render_text(SDL_Renderer *renderer, char *text, uint_t size, SDL_Rect rect, SDL_Color color) {
+    TTF_Font *sans = TTF_OpenFont("sans.ttf", size);
+    SDL_Surface *surface = TTF_RenderText_Solid(sans, text, color);
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
+
+    SDL_RenderCopy(renderer, texture, NULL, &rect);
+
+    SDL_DestroyTexture(texture);
+    SDL_FreeSurface(surface);
+    TTF_CloseFont(sans);
+}
+
+void render_logo(SDL_Renderer *renderer) {
+    render_text(renderer, "CuGO", 14, {330, 0, 150, 100}, {0, 0, 0});
 }
 
 void render_filled_circle(SDL_Renderer *renderer, int cx, int cy, int radius) {
