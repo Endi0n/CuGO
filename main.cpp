@@ -92,6 +92,7 @@ int main(int argv, char **args) {
         render_clear(renderer, colors[0]);
         render_board(renderer, board, colors + 1);
         render_logo(renderer);
+        render_turn_info(renderer, board, colors + 1);
 
         SDL_WaitEvent(&window_event);
         switch (window_event.type) {

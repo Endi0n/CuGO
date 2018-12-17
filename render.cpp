@@ -31,16 +31,19 @@ void render_clear(SDL_Renderer *renderer, SDL_Color color) {
     SDL_RenderClear(renderer);
 }
 
-void render_text(SDL_Renderer *renderer, char *text, uint_t size, SDL_Rect rect, SDL_Color color) {
-    TTF_Font *sans = TTF_OpenFont("sans.ttf", size);
-    SDL_Surface *surface = TTF_RenderText_Solid(sans, text, color);
+void render_text(SDL_Renderer *renderer, const char *text, uint_t size, point_t pos, SDL_Color color) {
+    TTF_Font *font = TTF_OpenFont("sans.ttf", size);
+    SDL_Surface *surface = TTF_RenderText_Blended(font, text, color);
     SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
+
+    SDL_Rect rect = {.x = pos.x, .y = pos.y};
+    TTF_SizeText(font, text, &rect.w, &rect.h);
 
     SDL_RenderCopy(renderer, texture, NULL, &rect);
 
     SDL_DestroyTexture(texture);
     SDL_FreeSurface(surface);
-    TTF_CloseFont(sans);
+    TTF_CloseFont(font);
 }
 
 void render_logo(SDL_Renderer *renderer) {
@@ -48,8 +51,8 @@ void render_logo(SDL_Renderer *renderer) {
         renderer,
         "CuGO",
         LOGO_SIZE,
-        {LOGO_OFFSET_X, LOGO_OFFSET_Y, LOGO_WIDTH, LOGO_HEIGHT},
-        {0, 0, 0} // Render with black color 
+        {LOGO_OFFSET_X, LOGO_OFFSET_Y},
+        {0, 0, 0, 255} // Render with black color 
     );
 }
 
@@ -134,4 +137,43 @@ void render_board(SDL_Renderer* renderer, board_t *board, const SDL_Color colors
     render_board_grid(renderer, board);
     render_board_pieces(renderer, board->player1_pieces, colors[0]);
     render_board_pieces(renderer, board->player2_pieces, colors[1]);
+}
+
+void render_turn_info(SDL_Renderer *renderer, board_t *board, const SDL_Color colors[2]) {
+    static const char *place = "has to place";
+    static const char *move = "has to move";
+    const char *msg = (board->moves < 16) ? place : move;
+    
+    SDL_SetRenderDrawColor(renderer, colors[board_current_player(board)]);
+    render_filled_circle(renderer,  30,  30, 12);
+    render_text(
+        renderer,
+        msg,
+        14,
+        {50, 20},
+        {0, 0, 0, 0} // Render with black color 
+    );
+
+    render_text(
+        renderer,
+        "No. of moves: ",
+        14,
+        {WINDOW_WIDTH - 150, 20},
+        {0, 0, 0, 0}
+    );
+
+    char moves[4] = {
+        (char)((board->moves / 100) % 10 + '0'),
+        (char)((board->moves / 10) % 10 + '0'),
+        (char)(board->moves % 10 + '0'),
+        '\0'
+    };
+
+    render_text(
+        renderer,
+        moves,
+        14,
+        {WINDOW_WIDTH - 50, 20},
+        {0, 0, 0, 0} // Render with black color 
+    );
 }
