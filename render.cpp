@@ -162,7 +162,8 @@ void render_turn_info(SDL_Renderer *renderer, board_t *board, const SDL_Color co
         {0, 0, 0, 0}
     );
 
-    char moves[4] = {
+    char moves[5] = {
+        (char)((board->moves / 1000) % 10 + '0'),
         (char)((board->moves / 100) % 10 + '0'),
         (char)((board->moves / 10) % 10 + '0'),
         (char)(board->moves % 10 + '0'),
@@ -173,7 +174,7 @@ void render_turn_info(SDL_Renderer *renderer, board_t *board, const SDL_Color co
         renderer,
         moves,
         14,
-        {WINDOW_WIDTH - 50, 20},
+        {WINDOW_WIDTH - 55, 20},
         {0, 0, 0, 0} // Render with black color 
     );
 }
