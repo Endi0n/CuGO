@@ -52,7 +52,7 @@ void render_logo(SDL_Renderer *renderer) {
         "CuGO",
         LOGO_SIZE,
         {LOGO_OFFSET_X, LOGO_OFFSET_Y},
-        {0, 0, 0, 255} // Render with black color 
+        {0, 0, 0} // Render with black color 
     );
 }
 
@@ -108,7 +108,7 @@ void render_board_cell(SDL_Renderer *renderer, int x, int y, SDL_Color color) {
 }
 
 void render_board_grid(SDL_Renderer *renderer, board_t *board) {
-    static const SDL_Color color1 = {255, 204, 102, 255}, color2 = {153, 102, 0, 255};
+    static const SDL_Color color1 = {255, 204, 102}, color2 = {153, 102, 0};
 
     for(uint_t x = 0; x < board->length; ++x)
         for(uint_t y = 0; y < board->length; ++y)
