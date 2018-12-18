@@ -2,6 +2,7 @@
 #include <SDL2/SDL_ttf.h>
 
 #include "dimensions.h"
+#include "color_scheme.h"
 #include "render.h"
 #include "board.h"
 #include "list_point.h"
@@ -12,15 +13,20 @@ using namespace std;
 SDL_Window *window;
 SDL_Renderer *renderer;
 
-SDL_Color colors[] = {
-    {204, 223, 255},
-    // previous bg: {255, 255, 204},
-    {0, 0, 0},
-    {255, 255, 255}
+color_scheme_t color_schemes[] = {
+    color_scheme_t {
+        .board_cell_colors = {{100, 100, 100}, {200, 200, 200}},
+        .player_piece_colors = {{0, 0, 0}, {255, 255, 255}}
+    },
+    color_scheme_t {
+        .board_cell_colors = {{255, 204, 102}, {153, 102, 0}},
+        .player_piece_colors = {{0, 0, 0}, {255, 255, 255}}
+    }
 };
 
-board_t *board;
+color_scheme_t color_scheme = color_schemes[0];
 
+board_t *board;
 bool game_over = false;
 
 void init_game() {
@@ -46,7 +52,7 @@ point_t board_position(SDL_MouseButtonEvent &mouse) {
     return {
         // (Relative position from board offset / Cell size) = Position of the click in the 0..<board.length grid
         (mouse.x - BOARD_OFFSET_X) / BOARD_CELL_SIZE,
-        (mouse.y -BOARD_OFFSET_Y) / BOARD_CELL_SIZE
+        (mouse.y - BOARD_OFFSET_Y) / BOARD_CELL_SIZE
     };
 }
 
@@ -88,14 +94,14 @@ int main(int argv, char **args) {
     bool exit_game_loop = false;
 
     do {
-        render_clear(renderer, colors[0]);
+        render_clear(renderer, {204, 223, 255});
         render_logo(renderer);
 
-        render_board(renderer, board, colors + 1);
+        render_board(renderer, board, color_scheme);
 
-        if (piece_selected) render_board_piece_selector(renderer, board, piece, colors + 1);
+        if (piece_selected) render_board_piece_selector(renderer, board, piece, color_scheme);
 
-        render_turn_info(renderer, board, colors + 1);
+        render_turn_info(renderer, board, color_scheme);
 
         SDL_WaitEvent(&window_event);
         switch (window_event.type) {

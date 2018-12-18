@@ -1,6 +1,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 #include "dimensions.h"
+#include "color_scheme.h"
 #include "board.h"
 #include "list_point.h"
 
@@ -107,12 +108,10 @@ void render_board_cell(SDL_Renderer *renderer, int x, int y, SDL_Color color) {
     SDL_RenderFillRect(renderer, &rect);
 }
 
-void render_board_grid(SDL_Renderer *renderer, board_t *board) {
-    static const SDL_Color color1 = {255, 204, 102}, color2 = {153, 102, 0};
-
+void render_board_grid(SDL_Renderer *renderer, board_t *board, const color_scheme_t &color_scheme) {
     for(uint_t x = 0; x < board->length; ++x)
         for(uint_t y = 0; y < board->length; ++y)
-            render_board_cell(renderer, x, y, ((x + y) % 2 == 0) ? color1 : color2);
+            render_board_cell(renderer, x, y, color_scheme.board_cell_colors[(x + y) % 2]);
 }
 
 void render_board_piece(SDL_Renderer *renderer, point_t piece) {
@@ -139,8 +138,8 @@ void render_board_potential_piece(SDL_Renderer *renderer, point_t piece) {
     );
 }
 
-void render_board_piece_selector(SDL_Renderer *renderer, board_t *board, point_t piece, const SDL_Color colors[2]) {
-    SDL_SetRenderDrawColor(renderer, colors[board_current_player(board)]);
+void render_board_piece_selector(SDL_Renderer *renderer, board_t *board, point_t piece, const color_scheme_t &color_scheme) {
+    SDL_SetRenderDrawColor(renderer, color_scheme.player_piece_colors[board_current_player(board)]);
 
     list_point_t *potential_moves;
     list_init(potential_moves);
@@ -152,18 +151,18 @@ void render_board_piece_selector(SDL_Renderer *renderer, board_t *board, point_t
     list_delete(potential_moves);
 }
 
-void render_board(SDL_Renderer* renderer, board_t *board, const SDL_Color colors[2]) {
-    render_board_grid(renderer, board);
-    render_board_pieces(renderer, board->player1_pieces, colors[0]);
-    render_board_pieces(renderer, board->player2_pieces, colors[1]);
+void render_board(SDL_Renderer* renderer, board_t *board, const color_scheme_t &color_scheme) {
+    render_board_grid(renderer, board, color_scheme);
+    render_board_pieces(renderer, board->player1_pieces, color_scheme.player_piece_colors[0]);
+    render_board_pieces(renderer, board->player2_pieces, color_scheme.player_piece_colors[1]);
 }
 
-void render_turn_info(SDL_Renderer *renderer, board_t *board, const SDL_Color colors[2]) {
+void render_turn_info(SDL_Renderer *renderer, board_t *board, const color_scheme_t &color_scheme) {
     static const char *place = "has to place";
     static const char *move = "has to move";
     const char *msg = (board->moves < 16) ? place : move;
     
-    SDL_SetRenderDrawColor(renderer, colors[board_current_player(board)]);
+    SDL_SetRenderDrawColor(renderer, color_scheme.player_piece_colors[board_current_player(board)]);
     render_filled_circle(renderer,  30,  30, 12);
     render_text(
         renderer,
