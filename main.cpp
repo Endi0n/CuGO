@@ -6,7 +6,6 @@
 #include "board.h"
 #include "list_point.h"
 
-
 #include <iostream>
 using namespace std;
 
@@ -14,10 +13,10 @@ SDL_Window *window;
 SDL_Renderer *renderer;
 
 SDL_Color colors[] = {
-    {204, 223, 255, 255},
-    // previous bg: {255, 255, 204, 255},
-    SDL_Color {0, 0, 0, 255},
-    SDL_Color {255, 255, 255, 255}
+    {204, 223, 255},
+    // previous bg: {255, 255, 204},
+    {0, 0, 0},
+    {255, 255, 255}
 };
 
 board_t *board;
