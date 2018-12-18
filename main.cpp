@@ -50,6 +50,9 @@ point_t board_position(SDL_MouseButtonEvent &mouse) {
     };
 }
 
+point_t piece;
+bool piece_selected = false;
+
 void handle_mouse_click(SDL_MouseButtonEvent &mouse) {
     if (game_over) return;
 
@@ -57,25 +60,22 @@ void handle_mouse_click(SDL_MouseButtonEvent &mouse) {
 
     if (board->moves < board->length * 2) {
         // Initial placing
-        board_place_piece(board, board_current_player(board), board_position(mouse));
+        board_place_piece(board, board_position(mouse));
     } else {
-        // Moves 
-        static point_t piece;
-        static bool selected = false;
-
-        if (!selected) {
-            point_t pos = board_position(mouse);
-            if (list_contains(board_player_list(board, board_current_player(board)), pos)) {
-                piece = pos;
-                selected = true;
-            }
+        // Moves
+        if (piece_selected) {
+            piece_selected = false;
+            board_move_piece(board, piece, board_position(mouse));
         } else {
-            selected = false;
-            board_move_piece(board, board_current_player(board), piece, board_position(mouse));
+            point_t pos = board_position(mouse);
+            if (list_contains(board_current_player_pieces(board), pos)) {
+                piece = pos;
+                piece_selected = true;
+            }
         }
     }
 
-    if (int aux = board_player_defeated(board, board_current_player(board))) {
+    if (int aux = board_player_defeated(board)) {
         cout << "Player " << board_current_player(board) << " was defeated. Score for opponent " << aux << '.' << endl;
         game_over = true;
     }
@@ -89,8 +89,12 @@ int main(int argv, char **args) {
 
     do {
         render_clear(renderer, colors[0]);
-        render_board(renderer, board, colors + 1);
         render_logo(renderer);
+
+        render_board(renderer, board, colors + 1);
+
+        if (piece_selected) render_board_piece_selector(renderer, board, piece, colors + 1);
+
         render_turn_info(renderer, board, colors + 1);
 
         SDL_WaitEvent(&window_event);

@@ -2,6 +2,13 @@
 #include "point.h"
 #include "list_point.h"
 
+const point_t piece_move_directions[] = {
+    {0, -1},
+    {1, 0},
+    {0, 1},
+    {-1, 0}
+};
+
 board_t* board_create(uint_t length) {
     board_t *board = new board_t;
 
@@ -26,92 +33,101 @@ inline bool board_valid_point(board_t *board, point_t pos) {
     );
 }
 
-bool board_place_piece(board_t *board, player_e player, point_t pos) {
+int board_group_encircled(board_t *board, list_point_t *visited) {
+    list_point_t *list1 = board_current_player_pieces(board),
+        *list2 = board_opponent_pieces(board);
+
+    list_node_point_t *start_node = visited->last;
+
+    uint_t last_length = visited->length;
+
+    bool can_move = false;
+
+    for (list_node_point_t *node = start_node; node; node = node->next) {
+        point_t current_pos = node->value;
+
+        for (uint_t i = 0; i < sizeof(piece_move_directions) / sizeof(point_t); ++i) {
+            point_t new_pos = {current_pos.x + piece_move_directions[i].x, current_pos.y + piece_move_directions[i].y};
+
+            if (!board_valid_point(board, new_pos) || list_find_node(start_node, new_pos)) continue;
+
+            if (list_contains(list1, new_pos)) list_append(visited, new_pos);
+            else can_move = can_move ? true : !list_contains(list2, new_pos);  // if one piece can move the entire group can
+        }
+    }
+
+    return (can_move ? 0 : (visited->length - last_length + 1));
+}
+
+int board_player_defeated(board_t *board) {
+    list_point_t *visited;
+    list_init(visited);
+
+    uint_t number_of_pieces_encircled = 0;
+
+    // Check all groups of pieces
+    for (list_node_point_t *node = board_current_player_pieces(board)->first; node; node = node->next) {
+        if (list_contains(visited, node->value)) continue;
+
+        list_append(visited, node->value);
+
+        number_of_pieces_encircled += board_group_encircled(board, visited);
+    }
+
+    list_delete(visited);
+    return number_of_pieces_encircled;
+}
+
+bool board_suicidal_place(board_t *board, point_t pos) {
+    list_point_t *visited;
+    list_init(visited);
+
+    list_append(visited, pos);
+    uint_t number_of_pieces_encircled = board_group_encircled(board, visited);
+
+    list_delete(visited);
+    return (number_of_pieces_encircled != 0);
+}
+
+bool board_place_piece(board_t *board, point_t pos) {
     if (!board_valid_point(board, pos)) return false;
 
-    if (list_contains(board->player1_pieces, pos) || list_contains(board->player2_pieces, pos))
-        return false;
+    if (list_contains(board->player1_pieces, pos)
+        || list_contains(board->player2_pieces, pos)
+        || board_suicidal_place(board, pos)) return false;
 
-    // TODO check if suicidal move
-
-    list_append(board_player_list(board, player), pos);
+    list_append(board_current_player_pieces(board), pos);
     board->moves++;
     return true; // valid placement
 }
 
-bool board_move_piece(board_t *board, player_e player, point_t src_piece, point_t dst) {
-    static const point_t directions[] = {
-        {0, -1},
-        {1, 0},
-        {0, 1},
-        {-1, 0}
-    };
-
-    bool valid_replace = false;
-    for (uint_t i = 0; i < sizeof(directions) / sizeof(point_t); ++i) {
-        point_t new_pos = {src_piece.x + directions[i].x, src_piece.y + directions[i].y};
-        if (new_pos.x == dst.x && new_pos.y == dst.y) {
-            valid_replace = true;
-            break;
-        }
+void board_potential_moves(board_t *board, point_t src_piece, list_point_t *potential_moves) {
+    for (uint_t i = 0; i < sizeof(piece_move_directions) / sizeof(point_t); ++i) {
+        point_t new_pos = {src_piece.x + piece_move_directions[i].x, src_piece.y + piece_move_directions[i].y};
+        if (!board_valid_point(board, new_pos)
+            || list_contains(board_current_player_pieces(board), new_pos)
+            || list_contains(board_opponent_pieces(board), new_pos)) continue;
+        list_append(potential_moves, new_pos);
     }
-
-    list_point_t *player_pieces = board_player_list(board, player);
-
-    if(!valid_replace || !list_contains(player_pieces, src_piece) || !board_place_piece(board, player, dst))
-        return false; // invalid move
-        
-    list_delete(player_pieces, src_piece);
-    // board->moves++ already done in board_place_piece
-    return true; // valid placement
 }
 
+bool board_move_piece(board_t *board, point_t src_piece, point_t dst) {
+    list_point_t *player_pieces = board_current_player_pieces(board);
 
-int board_player_defeated(board_t *board, player_e player) {
-    static const point_t directions[] = {
-        {0, -1},
-        {1, 0},
-        {0, 1},
-        {-1, 0}
-    };
+    if (!list_contains(player_pieces, src_piece)) return false;
 
-    list_point_t *list1 = board_player_list(board, player),
-        *list2 = board_player_list(board, (player_e)((player + 1) % 2));
+    list_point_t *potential_moves;
+    list_init(potential_moves);
+    board_potential_moves(board, src_piece, potential_moves);
 
-    list_point_t *visited;
-    list_init(visited);
-
-    // Check all groups of pieces
-    for (list_node_point_t *node = list1->first; node; node = node->next) {
-        if (list_contains(visited, node->value)) continue;
-
-        uint_t last_length = visited->length;
-        list_append(visited, node->value);
-
-        list_node_point_t *start_node = visited->last;
-        bool can_move = false;
-
-        // Check a group of pieces
-        for (list_node_point_t *node = start_node; node; node = node->next) {
-            point_t current_pos = node->value;
-
-            for (uint_t i = 0; i < sizeof(directions) / sizeof(point_t); ++i) {
-                point_t new_pos = {current_pos.x + directions[i].x, current_pos.y + directions[i].y};
-
-                if (!board_valid_point(board, new_pos) || list_find_node(start_node, new_pos)) continue;
-
-                if (list_contains(list1, new_pos)) list_append(visited, new_pos);
-                else can_move = can_move ? true : !list_contains(list2, new_pos);
-            }
-        }
-
-        // It's enough for one group of pieces to be encircled in order for a player to be defeated
-        if (!can_move) {
-            uint_t current_length = visited->length;
-            list_delete(visited);
-            return (current_length - last_length);
-        }
+    if(!list_contains(potential_moves, dst)) {
+        list_delete(potential_moves);
+        return false;
     }
-    list_delete(visited);
-    return 0;
+    
+    list_delete(potential_moves);
+    list_delete(player_pieces, src_piece);
+    list_append(player_pieces, dst);
+    board->moves++;
+    return true; // valid placement
 }

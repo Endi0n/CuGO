@@ -115,19 +115,41 @@ void render_board_grid(SDL_Renderer *renderer, board_t *board) {
             render_board_cell(renderer, x, y, ((x + y) % 2 == 0) ? color1 : color2);
 }
 
-void render_board_piece(SDL_Renderer *renderer, point_t pos) {
+void render_board_piece(SDL_Renderer *renderer, point_t piece) {
     render_filled_circle(
         renderer,
-        BOARD_OFFSET_X + BOARD_CELL_SIZE * pos.x + BOARD_CELL_SIZE / 2,
-        BOARD_OFFSET_Y + BOARD_CELL_SIZE * pos.y + BOARD_CELL_SIZE / 2,
+        BOARD_OFFSET_X + BOARD_CELL_SIZE * piece.x + BOARD_CELL_SIZE / 2,
+        BOARD_OFFSET_Y + BOARD_CELL_SIZE * piece.y + BOARD_CELL_SIZE / 2,
         BOARD_CELL_SIZE / 3
     );
 }
 
-void render_board_pieces(SDL_Renderer *renderer, list_point_t *list, SDL_Color color) {
+void render_board_pieces(SDL_Renderer *renderer, list_point_t *pieces, SDL_Color color) {
     SDL_SetRenderDrawColor(renderer, color);
-    for (list_node_point_t *node = list->first; node; node = node->next)
+    for (list_node_point_t *node = pieces->first; node; node = node->next)
         render_board_piece(renderer, node->value);
+}
+
+void render_board_potential_piece(SDL_Renderer *renderer, point_t piece) {
+    render_filled_circle(
+        renderer,
+        BOARD_OFFSET_X + BOARD_CELL_SIZE * piece.x + BOARD_CELL_SIZE / 2,
+        BOARD_OFFSET_Y + BOARD_CELL_SIZE * piece.y + BOARD_CELL_SIZE / 2,
+        BOARD_CELL_SIZE / 10
+    );
+}
+
+void render_board_piece_selector(SDL_Renderer *renderer, board_t *board, point_t piece, const SDL_Color colors[2]) {
+    SDL_SetRenderDrawColor(renderer, colors[board_current_player(board)]);
+
+    list_point_t *potential_moves;
+    list_init(potential_moves);
+    board_potential_moves(board, piece, potential_moves);
+
+    for (list_node_point_t *node = potential_moves->first; node; node = node->next)
+        render_board_potential_piece(renderer, node->value);
+
+    list_delete(potential_moves);
 }
 
 void render_board(SDL_Renderer* renderer, board_t *board, const SDL_Color colors[2]) {
