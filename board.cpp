@@ -13,7 +13,7 @@ board_t* board_create(uint_t length) {
     // Oc
     board_t *board = new board_t;
 
-    board->length = length;
+    board->size = length;
     list_init(board->player1_pieces);
     list_init(board->player2_pieces);
     board->moves = 0;
@@ -30,8 +30,8 @@ void board_delete(board_t *board) {
 
 inline bool board_valid_point(board_t *board, point_t pos) {
     return (
-        0 <= pos.x && pos.x < board->length &&
-        0 <= pos.y && pos.y < board->length
+        0 <= pos.x && pos.x < board->size &&
+        0 <= pos.y && pos.y < board->size
     );
 }
 

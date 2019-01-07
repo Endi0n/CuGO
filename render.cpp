@@ -131,8 +131,8 @@ void render_board_cell(int x, int y, SDL_Color color) {
 
 void render_board_grid(board_t *board, const color_scheme_t &color_scheme) {
     // Ot
-    for(uint_t x = 0; x < board->length; ++x)
-        for(uint_t y = 0; y < board->length; ++y)
+    for(uint_t x = 0; x < board->size; ++x)
+        for(uint_t y = 0; y < board->size; ++y)
             render_board_cell(x, y, color_scheme.board_cell_colors[(x + y) % 2]);
 }
 

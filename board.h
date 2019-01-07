@@ -10,7 +10,7 @@ enum player_e {
 };
 
 struct board_t {
-    uint_t length;
+    uint_t size;
     list_point_t *player1_pieces;
     list_point_t *player2_pieces;
     uint_t moves;
