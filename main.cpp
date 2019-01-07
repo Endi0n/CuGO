@@ -10,9 +10,6 @@
 #include <iostream>
 using namespace std;
 
-SDL_Window *window;
-SDL_Renderer *renderer;
-
 color_scheme_t color_schemes[] = {
     color_scheme_t {
         .board_cell_colors = {{100, 100, 100}, {200, 200, 200}},
@@ -30,21 +27,13 @@ board_t *board;
 bool game_over = false;
 
 void init_game() {
-    SDL_Init(SDL_INIT_EVERYTHING);
-    TTF_Init();
-
-    window = render_create_window();
-    renderer = render_create_renderer(window);
-
     board = board_create(8);
+    render_init();
 }
 
 void deinit_game() {
     board_delete(board);
-
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
-    SDL_Quit();
+    render_deinit();
 }
 
 point_t board_position(SDL_MouseButtonEvent &mouse) {
@@ -94,14 +83,14 @@ int main(int argv, char **args) {
     bool exit_game_loop = false;
 
     do {
-        render_clear(renderer, {204, 223, 255});
-        render_logo(renderer);
+        render_clear({204, 223, 255});
+        render_logo();
 
-        render_board(renderer, board, color_scheme);
+        render_board(board, color_scheme);
 
-        if (piece_selected) render_board_piece_selector(renderer, board, piece, color_scheme);
+        if (piece_selected) render_board_piece_selector(board, piece, color_scheme);
 
-        render_turn_info(renderer, board, color_scheme);
+        render_turn_info(board, color_scheme);
 
         SDL_WaitEvent(&window_event);
         switch (window_event.type) {
@@ -113,7 +102,7 @@ int main(int argv, char **args) {
                 break;
         }
 
-        SDL_RenderPresent(renderer);
+        render_present();
     } while (!exit_game_loop);
 
     deinit_game();
