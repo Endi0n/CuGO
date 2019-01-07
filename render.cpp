@@ -1,5 +1,6 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
+
 #include "dimensions.h"
 #include "color_scheme.h"
 #include "board.h"
@@ -41,6 +42,7 @@ void render_init() {
 void render_deinit() {
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
+    TTF_Quit();
     SDL_Quit();
 }
 
@@ -63,9 +65,9 @@ void render_text(const char *text, uint_t size, point_t pos, SDL_Color color) {
 
     SDL_RenderCopy(renderer, texture, NULL, &rect);
 
+    TTF_CloseFont(font);
     SDL_DestroyTexture(texture);
     SDL_FreeSurface(surface);
-    TTF_CloseFont(font);
 }
 
 void render_logo() {
@@ -181,7 +183,7 @@ void render_board(board_t *board, const color_scheme_t &color_scheme) {
 void render_turn_info(board_t *board, const color_scheme_t &color_scheme) {
     static const char *place = "has to place";
     static const char *move = "has to move";
-    const char *msg = (board->moves < 16) ? place : move;
+    const char *msg = (board->moves < board->size * 2) ? place : move;
     
     SDL_SetRenderDrawColor(renderer, color_scheme.player_piece_colors[board_current_player(board)]);
     render_filled_circle(30,  30, 12);
