@@ -39,7 +39,7 @@ void deinit_game() {
 point_t board_position(SDL_MouseButtonEvent &mouse) {
     // Ot
     return {
-        // (Relative position from board offset / Cell size) = Position of the click in the 0..<board.length grid
+        // (Relative position from board offset / Cell size) = Position of the click in the 0..<board.size grid
         (mouse.x - BOARD_OFFSET_X) / BOARD_CELL_SIZE,
         (mouse.y - BOARD_OFFSET_Y) / BOARD_CELL_SIZE
     };
@@ -53,7 +53,7 @@ void handle_mouse_click(SDL_MouseButtonEvent &mouse) {
 
     if (mouse.button != SDL_BUTTON_LEFT) return;
 
-    if (board->moves < board->length * 2) {
+    if (board->moves < board->size * 2) {
         // Initial placing
         board_place_piece(board, board_position(mouse));
     } else {
