@@ -2,6 +2,7 @@
 #include "board.h"
 #include "menu.h"
 #include "render.h"
+#include "sound.h"
 
 #include <iostream>
 using namespace std;
@@ -38,19 +39,23 @@ void handle_mouse_click(SDL_MouseButtonEvent &mouse) {
 
     if (board->moves < board->size * 2) {
         // Initial placing
-        board_place_piece(board, board_position(mouse));
+        if (board_place_piece(board, board_position(mouse)))
+            sound_play_place_piece();
     } else {
         // Moves
-        if (piece_selected) {
-            piece_selected = false;
-            board_move_piece(board, piece, board_position(mouse));
-        } else {
+        if (!piece_selected) {
             point_t pos = board_position(mouse);
             if (list_contains(board_current_player_pieces(board), pos)) {
                 piece = pos;
                 piece_selected = true;
             }
+            return;
         }
+        
+        piece_selected = false;
+        
+        if(board_move_piece(board, piece, board_position(mouse)))
+             sound_play_place_piece();
     }
 
     if (int aux = board_player_defeated(board)) {

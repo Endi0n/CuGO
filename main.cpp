@@ -3,10 +3,12 @@
 #include "render.h"
 #include "game.h"
 #include "menu.h"
+#include "sound.h"
 
 int main(int argv, char **args) {
-    game_init();
     render_init();
+    sound_init();
+    game_init();
 
     SDL_Event window_event;
 
@@ -20,6 +22,7 @@ int main(int argv, char **args) {
     }
 
     game_deinit();
+    sound_deinit();
     render_deinit();
     
     return 0;
