@@ -61,13 +61,16 @@ void handle_mouse_click(SDL_MouseButtonEvent &mouse) {
              sound_play_place_piece();
     }
 
-    if (int aux = board_player_defeated(board)) game_over = true;
+    if (int aux = board_player_defeated(board)) {
+        game_over = true;
+        sound_play_tada();
+    }
 }
 
 void render_turn_info(board_t *board, const color_scheme_t &color_scheme) {
     const char *const place = "has to place";
     const char *const move = "has to move";
-    const char *const won = "won";
+    const char *const won = "WON";
 
     const char *msg = (!game_over) ? (board->moves < board->size * 2) ? place : move : won;
 
