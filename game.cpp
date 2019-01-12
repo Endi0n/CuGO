@@ -21,6 +21,10 @@ bool game_started() {
     return (board ? board->player1_pieces->length : false);
 }
 
+bool game_over() {
+    return pieces_encircled;
+}
+
 point_t board_position(SDL_MouseButtonEvent mouse) {
     return {
         // (Relative position from board offset / Cell size) = Position of the click in the 0..<board.size grid
