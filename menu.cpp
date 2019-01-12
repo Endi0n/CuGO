@@ -41,14 +41,14 @@ enum menu_state_e {
 
 bool game_started = false;
 
-bool menu_button_pressed(SDL_MouseButtonEvent &mouse, SDL_Rect button) {
+bool menu_button_pressed(SDL_MouseButtonEvent mouse, SDL_Rect button) {
     return (
         mouse.x >= button.x && mouse.x <= button.x + button.w
         && mouse.y >= button.y && mouse.y <= button.y + button.h
     );
 }
 
-void menu_handle_mouse_click(SDL_MouseButtonEvent &mouse) {
+void menu_handle_mouse_click(SDL_MouseButtonEvent mouse) {
     if (menu_state != DEFAULT) {
         if(menu_button_pressed(mouse, back_btn))
             menu_state = DEFAULT;

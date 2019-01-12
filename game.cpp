@@ -17,7 +17,7 @@ void game_deinit() {
     board_delete(board);
 }
 
-point_t board_position(SDL_MouseButtonEvent &mouse) {
+point_t board_position(SDL_MouseButtonEvent mouse) {
     return {
         // (Relative position from board offset / Cell size) = Position of the click in the 0..<board.size grid
         (mouse.x - BOARD_OFFSET_X) / BOARD_CELL_SIZE,
@@ -31,7 +31,7 @@ bool piece_selected = false;
 SDL_Rect menu_btn = {WINDOW_WIDTH - 120, 550, 100, 30};
 SDL_Rect new_game_btn = {30, 550, 100, 30};
 
-void handle_mouse_click(SDL_MouseButtonEvent &mouse) {
+void handle_mouse_click(SDL_MouseButtonEvent mouse) {
     if (menu_button_pressed(mouse, new_game_btn)) {
         game_deinit();
         game_init();
