@@ -17,7 +17,6 @@ void render_button(const SDL_Rect&, const char*, SDL_Color, SDL_Color);
 void render_logo();
 void render_board_piece_selector(board_t*, point_t, const color_scheme_t&);
 void render_board(board_t*, const color_scheme_t&);
-void render_turn_info(board_t*, const color_scheme_t&);
 void render_deinit();
 
 #endif // CUGO_RENDER_H

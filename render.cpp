@@ -183,42 +183,6 @@ void render_board(board_t *board, const color_scheme_t &color_scheme) {
     render_board_pieces(board->player2_pieces, color_scheme.player_piece_colors[1]);
 }
 
-void render_turn_info(board_t *board, const color_scheme_t &color_scheme) {
-    static const char *place = "has to place";
-    static const char *move = "has to move";
-    const char *msg = (board->moves < board->size * 2) ? place : move;
-    
-    render_circle(30,  30, 12, color_scheme.player_piece_colors[board_current_player(board)]);
-    render_text(
-        msg,
-        14,
-        {50, 20},
-        {0, 0, 0, 0} // Render with black color 
-    );
-
-    render_text(
-        "No. of moves: ",
-        14,
-        {WINDOW_WIDTH - 150, 20},
-        {0, 0, 0, 0}
-    );
-
-    char moves[5] = {
-        (char)((board->moves / 1000) % 10 + '0'),
-        (char)((board->moves / 100) % 10 + '0'),
-        (char)((board->moves / 10) % 10 + '0'),
-        (char)(board->moves % 10 + '0'),
-        '\0'
-    };
-
-    render_text(
-        moves,
-        14,
-        {WINDOW_WIDTH - 55, 20},
-        {0, 0, 0, 0} // Render with black color 
-    );
-}
-
 void render_button(const SDL_Rect &rect, const char *text, SDL_Color button_color, SDL_Color text_color) {
     int text_width, text_height;
     
