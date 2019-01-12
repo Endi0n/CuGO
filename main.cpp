@@ -8,7 +8,6 @@
 int main(int argv, char **args) {
     render_init();
     sound_init();
-    game_init();
 
     SDL_Event window_event;
 
@@ -21,7 +20,6 @@ int main(int argv, char **args) {
         else game_loop(window_event);
     }
 
-    game_deinit();
     sound_deinit();
     render_deinit();
     
