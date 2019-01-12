@@ -6,9 +6,8 @@
 
 typedef unsigned int uint;
 
-void menu_show();
-void menu_hide();
 bool menu_visible();
+bool menu_visible(bool);
 
 uint menu_board_size();
 color_scheme_t menu_color_scheme();

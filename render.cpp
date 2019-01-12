@@ -221,3 +221,14 @@ void render_turn_info(board_t *board, const color_scheme_t &color_scheme) {
         {0, 0, 0, 0} // Render with black color 
     );
 }
+
+void render_button(const SDL_Rect &rect, const char *text, SDL_Color button_color, SDL_Color text_color) {
+    int text_width, text_height;
+    
+    TTF_Font *font = TTF_OpenFont("sans.ttf", 16);
+    TTF_SizeText(font, text, &text_width, &text_height);
+    TTF_CloseFont(font);
+
+    render_rect(rect, button_color);
+    render_text(text, 16, {rect.x + (rect.w - text_width) / 2, rect.y + (rect.h - text_height) / 2}, text_color);
+}
