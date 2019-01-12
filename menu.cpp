@@ -1,5 +1,6 @@
 #include <SDL2/SDL.h>
 #include "menu.h"
+#include "game.h"
 #include "render.h"
 
 color_scheme_t color_schemes[] = {
@@ -25,9 +26,12 @@ color_scheme_t menu_color_scheme() { return color_scheme; }
 
 SDL_Rect play_btn = {200,150,400,50};
 SDL_Rect rules_btn = {200,230,400,50};
+SDL_Rect reset_btn = {200, 310, 400, 50};
 SDL_Rect back_btn = {200, 500, 400, 50};
 
 bool show_rules = false;
+
+bool game_started = false;
 
 bool menu_button_pressed(SDL_MouseButtonEvent &mouse, SDL_Rect button) {
     return (
@@ -43,16 +47,34 @@ void menu_handle_mouse_click(SDL_MouseButtonEvent &mouse) {
         return;
     }
 
-    if(menu_button_pressed(mouse, rules_btn))
+    if(menu_button_pressed(mouse, rules_btn)) {
         show_rules = true;
+        return;
+    }
     
-    if(menu_button_pressed(mouse, play_btn))
+    if(menu_button_pressed(mouse, play_btn)) {
+        if (!game_started) {
+            game_started = true;
+            game_init();
+        }
         menu_visible(false);
+        return;
+    }
+
+    if (game_started && menu_button_pressed(mouse, reset_btn)) {
+        game_deinit();
+        game_started = false;
+        return;
+    }
 }
 
 void render_menu() {
-    render_button(play_btn, "Play", {137, 164, 255}, {255, 255, 255});
+    const char *play = (game_started) ? "Resume" : "Play";
+    render_button(play_btn, play, {137, 164, 255}, {255, 255, 255});
     render_button(rules_btn, "Rules", {137, 164, 255}, {255, 255, 255});
+    if (game_started) {
+        render_button(reset_btn,  "Reset", {137, 164, 255}, {255, 255, 255});
+    }
 }
 
 void render_rules() {

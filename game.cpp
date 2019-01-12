@@ -1,3 +1,4 @@
+#include <SDL2/SDL.h>
 #include "dimensions.h"
 #include "board.h"
 #include "menu.h"
@@ -32,10 +33,15 @@ point_t board_position(SDL_MouseButtonEvent &mouse) {
 point_t piece;
 bool piece_selected = false;
 
-void handle_mouse_click(SDL_MouseButtonEvent &mouse) {
-    if (game_over) return;
+SDL_Rect menu_btn = {WINDOW_WIDTH - 120, 550, 100, 30};
 
-    if (mouse.button != SDL_BUTTON_LEFT) return;
+void handle_mouse_click(SDL_MouseButtonEvent &mouse) {
+    if (menu_button_pressed(mouse, menu_btn)) {
+        menu_visible(true);
+        return;
+    }
+
+    if (game_over) return;
 
     if (board->moves < board->size * 2) {
         // Initial placing
@@ -105,6 +111,8 @@ void game_loop(SDL_Event window_event) {
     render_logo();
 
     render_board(board, menu_color_scheme());
+
+    render_button(menu_btn, "Menu", {137, 164, 255}, {255, 255, 255});
 
     if (piece_selected) render_board_piece_selector(board, piece, menu_color_scheme());
 
