@@ -55,6 +55,11 @@ void render_clear(SDL_Color color) {
     SDL_RenderClear(renderer);
 }
 
+void render_rect(const SDL_Rect &rect, SDL_Color color) {
+    SDL_SetRenderDrawColor(renderer, color);
+    SDL_RenderFillRect(renderer, &rect);
+}
+
 void render_text(const char *text, uint_t size, point_t pos, SDL_Color color) {
     TTF_Font *font = TTF_OpenFont("sans.ttf", size);
     SDL_Surface *surface = TTF_RenderText_Blended(font, text, color);
@@ -119,8 +124,6 @@ void render_filled_circle(int cx, int cy, int radius) {
 
 void render_board_cell(int x, int y, SDL_Color color) {
     // Ot
-    SDL_SetRenderDrawColor(renderer, color);
-
     SDL_Rect rect = {
         BOARD_OFFSET_X + x * BOARD_CELL_SIZE,
         BOARD_OFFSET_Y + y * BOARD_CELL_SIZE,
@@ -128,7 +131,7 @@ void render_board_cell(int x, int y, SDL_Color color) {
         BOARD_CELL_SIZE
     };
     
-    SDL_RenderFillRect(renderer, &rect);
+    render_rect(rect, color);
 }
 
 void render_board_grid(board_t *board, const color_scheme_t &color_scheme) {
