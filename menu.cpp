@@ -1,5 +1,6 @@
 #include <SDL2/SDL.h>
 #include "menu.h"
+#include "dimensions.h"
 #include "game.h"
 #include "render.h"
 
@@ -24,12 +25,19 @@ uint menu_board_size() { return 8; }
 
 color_scheme_t menu_color_scheme() { return color_scheme; }
 
-SDL_Rect play_btn = {200,150,400,50};
-SDL_Rect rules_btn = {200,230,400,50};
-SDL_Rect reset_btn = {200, 310, 400, 50};
-SDL_Rect back_btn = {200, 500, 400, 50};
+const int MENU_BUTTON_OFFSET_X = (WINDOW_WIDTH - 400) / 2;
 
-bool show_rules = false;
+SDL_Rect play_btn = {MENU_BUTTON_OFFSET_X, 150, 400, 50};
+SDL_Rect customize_btn = {MENU_BUTTON_OFFSET_X, 230, 400, 50};
+SDL_Rect rules_btn = {MENU_BUTTON_OFFSET_X, 310, 400, 50};
+SDL_Rect reset_btn = {MENU_BUTTON_OFFSET_X, 390, 400, 50};
+SDL_Rect back_btn = {MENU_BUTTON_OFFSET_X, 500, 400, 50};
+
+enum menu_state_e {
+    DEFAULT,
+    CUSTOMIZE,
+    RULES,
+} menu_state = DEFAULT;
 
 bool game_started = false;
 
@@ -41,14 +49,19 @@ bool menu_button_pressed(SDL_MouseButtonEvent &mouse, SDL_Rect button) {
 }
 
 void menu_handle_mouse_click(SDL_MouseButtonEvent &mouse) {
-    if (show_rules) {
+    if (menu_state != DEFAULT) {
         if(menu_button_pressed(mouse, back_btn))
-            show_rules = false;
+            menu_state = DEFAULT;
+        return;
+    }
+
+    if (menu_button_pressed(mouse, customize_btn)) {
+        menu_state = CUSTOMIZE;
         return;
     }
 
     if(menu_button_pressed(mouse, rules_btn)) {
-        show_rules = true;
+        menu_state = RULES;
         return;
     }
     
@@ -69,12 +82,20 @@ void menu_handle_mouse_click(SDL_MouseButtonEvent &mouse) {
 }
 
 void render_menu() {
+    SDL_Color btn_bg = {137, 164, 255}, btn_color = {255, 255, 255};
+
     const char *play = (game_started) ? "Resume" : "Play";
-    render_button(play_btn, play, {137, 164, 255}, {255, 255, 255});
-    render_button(rules_btn, "Rules", {137, 164, 255}, {255, 255, 255});
-    if (game_started) {
-        render_button(reset_btn,  "Reset", {137, 164, 255}, {255, 255, 255});
-    }
+    render_button(play_btn, play, btn_bg, btn_color);
+
+    render_button(customize_btn, "Customize", btn_bg, btn_color);
+    render_button(rules_btn, "Rules", btn_bg, btn_color);
+
+    if (game_started)
+        render_button(reset_btn,  "Reset", btn_bg, btn_color);
+}
+
+void render_customize() {
+
 }
 
 void render_rules() {
@@ -90,16 +111,26 @@ void render_rules() {
         render_circle(215, 167 + 18 * i, 3, {0, 0, 0});
         render_text(rules[i], 14, {225, 157 + 18 * i}, {0, 0, 0});
     }
-
-    render_button(back_btn, "Back", {137, 164, 255}, {255, 255, 255});
 }
 
 void menu_loop(SDL_Event window_event) {
     render_clear({204, 223, 255});
     render_logo();
 
-    if (show_rules) render_rules();
-    else render_menu();
+    switch (menu_state) {
+    case CUSTOMIZE:
+        render_customize();
+        break;
+    case RULES:
+        render_rules();
+        break;
+    default:
+        render_menu();
+        break;
+    }
+
+    if (menu_state != DEFAULT)
+        render_button(back_btn, "Back", {137, 164, 255}, {255, 255, 255});
 
     if (window_event.type == SDL_MOUSEBUTTONDOWN)
         menu_handle_mouse_click(window_event.button);
