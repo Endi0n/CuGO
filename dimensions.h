@@ -8,7 +8,7 @@ const int
     WINDOW_HEIGHT = 600,
 
     LOGO_SIZE = 65,
-    LOGO_OFFSET_X = 315,
+    LOGO_OFFSET_X = 310,
     LOGO_OFFSET_Y = 10,
 
     BOARD_CELL_SIZE = 50,
