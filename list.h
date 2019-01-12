@@ -33,4 +33,4 @@ void list_delete(LIST_NAME(TYPE)*, NODE_NAME(TYPE)*);
 
 void list_delete(LIST_NAME(TYPE)*, const TYPE&);
 
-void list_delete(LIST_NAME(TYPE)*);
+void list_delete(LIST_NAME(TYPE)*&);

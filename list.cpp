@@ -72,8 +72,9 @@ void list_delete(LIST_NAME(TYPE) *list, const TYPE &value) {
     list_delete(list, list_find_node(list->first, value));
 }
 
-void list_delete(LIST_NAME(TYPE) *list) {
+void list_delete(LIST_NAME(TYPE) *&list) {
     while (!list_is_empty(list))
         list_delete(list, list->last);
     delete list;
+    list = nullptr;
 }
