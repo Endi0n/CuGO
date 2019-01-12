@@ -20,10 +20,11 @@ board_t* board_create(uint_t length) {
     return board;
 }
 
-void board_delete(board_t *board) {
+void board_delete(board_t *&board) {
     list_delete(board->player1_pieces);
     list_delete(board->player2_pieces);
     delete board;
+    board = nullptr;
 }
 
 inline bool board_valid_point(board_t *board, point_t pos) {

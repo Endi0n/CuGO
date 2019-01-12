@@ -17,7 +17,7 @@ struct board_t {
 };
 
 board_t* board_create(uint_t);
-void board_delete(board_t*);
+void board_delete(board_t*&);
 
 inline player_e board_current_player(board_t *board) { return (player_e)(board->moves % 2); }
 inline player_e board_opponent(board_t *board) { return (player_e)((board->moves + 1) % 2); }
