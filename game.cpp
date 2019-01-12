@@ -5,9 +5,6 @@
 #include "render.h"
 #include "sound.h"
 
-#include <iostream>
-using namespace std;
-
 board_t *board;
 bool game_over = true;
 
@@ -63,31 +60,22 @@ void handle_mouse_click(SDL_MouseButtonEvent &mouse) {
              sound_play_place_piece();
     }
 
-    if (int aux = board_player_defeated(board)) {
-        cout << "Player " << board_current_player(board) << " was defeated. Score for opponent " << aux << '.' << endl;
-        game_over = true;
-    }
+    if (int aux = board_player_defeated(board)) game_over = true;
 }
 
 void render_turn_info(board_t *board, const color_scheme_t &color_scheme) {
-    static const char *place = "has to place";
-    static const char *move = "has to move";
-    const char *msg = (board->moves < board->size * 2) ? place : move;
-    
-    render_circle(30,  30, 12, color_scheme.player_piece_colors[board_current_player(board)]);
-    render_text(
-        msg,
-        14,
-        {50, 20},
-        {0, 0, 0, 0} // Render with black color 
-    );
+    const char *const place = "has to place";
+    const char *const move = "has to move";
+    const char *const won = "won";
 
-    render_text(
-        "No. of moves: ",
-        14,
-        {WINDOW_WIDTH - 150, 20},
-        {0, 0, 0, 0}
-    );
+    const char *msg = (!game_over) ? (board->moves < board->size * 2) ? place : move : won;
+
+    int player = (!game_over) ? board_current_player(board) : board_opponent(board);
+    
+    render_circle(30,  30, 12, color_scheme.player_piece_colors[player]);
+    render_text(msg, 14, {50, 20}, {0, 0, 0, 0});
+
+    render_text("No. of moves: ", 14, {WINDOW_WIDTH - 150, 20}, {0, 0, 0, 0});
 
     char moves[5] = {
         (char)((board->moves / 1000) % 10 + '0'),
@@ -97,12 +85,7 @@ void render_turn_info(board_t *board, const color_scheme_t &color_scheme) {
         '\0'
     };
 
-    render_text(
-        moves,
-        14,
-        {WINDOW_WIDTH - 55, 20},
-        {0, 0, 0, 0} // Render with black color 
-    );
+    render_text(moves, 14, {WINDOW_WIDTH - 55, 20}, {0, 0, 0, 0});
 }
 
 void game_loop(SDL_Event window_event) {
