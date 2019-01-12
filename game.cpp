@@ -6,15 +6,14 @@
 #include "sound.h"
 
 board_t *board;
-bool game_over = true;
+int pieces_encircled;
 
 void game_init() {
-    game_over = false;
+    pieces_encircled = 0;
     board = board_create(menu_board_size());
 }
 
 void game_deinit() {
-    game_over = true;
     board_delete(board);
 }
 
@@ -45,7 +44,7 @@ void handle_mouse_click(SDL_MouseButtonEvent &mouse) {
         return;
     }
 
-    if (game_over) return;
+    if (pieces_encircled) return;
 
     if (board->moves < board->size * 2) {
         // Initial placing
@@ -68,20 +67,26 @@ void handle_mouse_click(SDL_MouseButtonEvent &mouse) {
              sound_play_place_piece();
     }
 
-    if (int aux = board_player_defeated(board)) {
-        game_over = true;
+    if ((pieces_encircled = board_player_defeated(board)))
         sound_play_tada();
-    }
 }
 
 void render_turn_info(board_t *board, const color_scheme_t &color_scheme) {
     const char *const place = "has to place";
     const char *const move = "has to move";
-    const char *const won = "WON";
+    static char won[19] = "WON WITH * POINTS!";
 
-    const char *msg = (!game_over) ? (board->moves < board->size * 2) ? place : move : won;
-
-    int player = (!game_over) ? board_current_player(board) : board_opponent(board);
+    const char *msg;
+    int player;
+    
+    if (!pieces_encircled) {
+        msg = (board->moves < board->size * 2) ? place : move;
+        player = board_current_player(board);
+    } else {
+        won[9] = pieces_encircled + '0';
+        msg = won;
+        player = board_opponent(board);
+    }
     
     render_circle(30,  30, 12, color_scheme.player_piece_colors[player]);
     render_text(msg, 14, {50, 20}, {0, 0, 0, 0});
@@ -107,7 +112,7 @@ void game_loop(SDL_Event window_event) {
 
     render_button(menu_btn, "Menu", {137, 164, 255}, {255, 255, 255});
 
-    if (game_over)
+    if (pieces_encircled)
         render_button(new_game_btn, "New Game", {137, 164, 255}, {255, 255, 255});
 
     if (piece_selected) render_board_piece_selector(board, piece, menu_color_scheme());
