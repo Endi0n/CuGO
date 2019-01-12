@@ -17,6 +17,10 @@ void game_deinit() {
     board_delete(board);
 }
 
+bool game_started() {
+    return (board ? board->player1_pieces->length : false);
+}
+
 point_t board_position(SDL_MouseButtonEvent mouse) {
     // Ot
     return {

@@ -5,6 +5,7 @@
 
 void game_init();
 void game_deinit();
+bool game_started();
 void game_loop(SDL_Event);
 
 #endif // CUGO_GAME_H
