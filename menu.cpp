@@ -99,17 +99,24 @@ void render_customize() {
 }
 
 void render_rules() {
-    SDL_Rect bg = {200, 120, 400, 350};
+    const int width = 550;
+    const int offset_x = (WINDOW_WIDTH - width) / 2;
+
+    SDL_Rect bg = {offset_x, 120, width, 350};
     render_rect(bg, {255, 255, 255});
-    render_text("Game Rules:", 16, {210, 130}, {0,0,0});
+    render_text("Game Rules:", 16, {offset_x + 10, 130}, {0,0,0});
 
     const char *const rules[] = {
-        "Each player has 8 pieces.",
+        "Each player has a limited amount of pieces, equal to the size of the board.",
+        "The objective is to encircle at least one of the opponent's pieces.",
+        "Players begin by placing their pieces.",
+        "After all the pieces have been placed, players can move their pieces.",
+        "The pieces can be moved up, down, left, or right.",
     };
 
     for (int i = 0; i < sizeof(rules) / sizeof(char*); i++) {
-        render_circle(215, 167 + 18 * i, 3, {0, 0, 0});
-        render_text(rules[i], 14, {225, 157 + 18 * i}, {0, 0, 0});
+        render_circle(offset_x + 15, 167 + 18 * i, 3, {0, 0, 0});
+        render_text(rules[i], 14, {offset_x + 25, 157 + 18 * i}, {0, 0, 0});
     }
 }
 
