@@ -37,9 +37,11 @@ enum menu_state_e {
     DEFAULT,
     CUSTOMIZE,
     RULES,
-} menu_state = DEFAULT;
+};
 
-bool game_started = false;
+menu_state_e menu_state = DEFAULT;
+
+bool game_inited = false;
 
 bool menu_button_pressed(SDL_MouseButtonEvent mouse, SDL_Rect button) {
     return (
@@ -66,17 +68,17 @@ void menu_handle_mouse_click(SDL_MouseButtonEvent mouse) {
     }
     
     if(menu_button_pressed(mouse, play_btn)) {
-        if (!game_started) {
-            game_started = true;
+        if (!game_inited) {
+            game_inited = true;
             game_init();
         }
         menu_visible(false);
         return;
     }
 
-    if (game_started && menu_button_pressed(mouse, reset_btn)) {
+    if (game_started() && menu_button_pressed(mouse, reset_btn)) {
         game_deinit();
-        game_started = false;
+        game_inited = false;
         return;
     }
 }
@@ -84,13 +86,13 @@ void menu_handle_mouse_click(SDL_MouseButtonEvent mouse) {
 void render_menu() {
     SDL_Color btn_bg = {137, 164, 255}, btn_color = {255, 255, 255};
 
-    const char *play = (game_started) ? "Resume" : "Play";
+    const char *play = (game_started()) ? "Resume" : "Play";
     render_button(play_btn, play, btn_bg, btn_color);
 
     render_button(customize_btn, "Customize", btn_bg, btn_color);
     render_button(rules_btn, "Rules", btn_bg, btn_color);
 
-    if (game_started)
+    if (game_started())
         render_button(reset_btn,  "Reset", btn_bg, btn_color);
 }
 
