@@ -50,6 +50,29 @@ bool menu_button_pressed(SDL_MouseButtonEvent mouse, SDL_Rect button) {
     );
 }
 
+bool confirm_action(const char *msg) {
+    const SDL_MessageBoxButtonData buttons[] = {
+        { SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 0, "Cancel" },
+        { SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1, "Yes"},
+    };
+
+    const SDL_MessageBoxData messageboxdata = {
+        SDL_MESSAGEBOX_INFORMATION,
+        NULL,
+        "",
+        msg,
+        sizeof(buttons) / sizeof(SDL_MessageBoxButtonData),
+        buttons,
+        NULL
+    };
+
+    int button_id;
+
+    SDL_ShowMessageBox(&messageboxdata, &button_id);
+    
+    return (button_id > 0);
+}
+
 void menu_handle_mouse_click(SDL_MouseButtonEvent mouse) {
     if (menu_state != DEFAULT) {
         if(menu_button_pressed(mouse, back_btn))
@@ -77,6 +100,14 @@ void menu_handle_mouse_click(SDL_MouseButtonEvent mouse) {
     }
 
     if (game_started() && menu_button_pressed(mouse, reset_btn)) {
+        if (!game_over()) {
+            bool confirm = confirm_action(
+                "A new game will be started, and the current game session will be lost.\n\n"
+                "Are you sure you want to continue?"
+            );
+
+            if (!confirm) return;
+        }
         game_deinit();
         game_init();
         menu_visible(false);
