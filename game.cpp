@@ -1,16 +1,22 @@
 #include <SDL2/SDL.h>
 #include "dimensions.h"
+#include "point.h"
 #include "board.h"
 #include "menu.h"
 #include "render.h"
 #include "sound.h"
 
 board_t *board;
+point_t board_offset;
 int pieces_encircled;
 
 void game_init() {
     pieces_encircled = 0;
     board = board_create(menu_board_size());
+    board_offset = {
+        (int)(WINDOW_WIDTH - board->size * BOARD_CELL_SIZE) / 2,
+        (int)(WINDOW_HEIGHT - board->size * BOARD_CELL_SIZE) / 2 + 20
+    };
 }
 
 void game_deinit() {
@@ -28,8 +34,8 @@ bool game_over() {
 point_t board_position(SDL_MouseButtonEvent mouse) {
     return {
         // (Relative position from board offset / Cell size) = Position of the click in the 0..<board.size grid
-        (mouse.x - BOARD_OFFSET_X) / BOARD_CELL_SIZE,
-        (mouse.y - BOARD_OFFSET_Y) / BOARD_CELL_SIZE
+        (mouse.x - board_offset.x) / BOARD_CELL_SIZE,
+        (mouse.y - board_offset.y) / BOARD_CELL_SIZE
     };
 }
 
@@ -115,14 +121,14 @@ void game_loop(SDL_Event window_event) {
     render_clear({204, 223, 255});
     render_logo();
 
-    render_board(board, menu_color_scheme());
+    render_board(board, board_offset, menu_color_scheme());
 
     render_button(menu_btn, "Menu", {137, 164, 255}, {255, 255, 255});
 
     if (pieces_encircled)
         render_button(new_game_btn, "New Game", {137, 164, 255}, {255, 255, 255});
 
-    if (piece_selected) render_board_piece_selector(board, piece, menu_color_scheme());
+    if (piece_selected) render_board_piece_selector(board, board_offset, piece, menu_color_scheme());
 
     render_turn_info(board, menu_color_scheme());
 

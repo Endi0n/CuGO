@@ -11,8 +11,6 @@ const int
     LOGO_OFFSET_X = 310,
     LOGO_OFFSET_Y = 10,
 
-    BOARD_CELL_SIZE = 50,
-    BOARD_OFFSET_X = 200,
-    BOARD_OFFSET_Y = 120;
+    BOARD_CELL_SIZE = 50;
 
 #endif // CUGO_DIMENSION_h
