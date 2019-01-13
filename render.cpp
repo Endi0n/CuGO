@@ -30,6 +30,7 @@ SDL_Renderer* render_create_renderer(SDL_Window *window) {
 
 SDL_Window *window;
 SDL_Renderer *renderer;
+SDL_Surface *icon;
 
 void render_init() {
     SDL_Init(SDL_INIT_EVERYTHING);
@@ -37,9 +38,13 @@ void render_init() {
 
     window = render_create_window();
     renderer = render_create_renderer(window);
+
+    icon = SDL_LoadBMP("icon.bmp");
+    SDL_SetWindowIcon(window, icon);
 }
 
 void render_deinit() {
+    SDL_FreeSurface(icon);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     TTF_Quit();
