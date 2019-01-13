@@ -2,10 +2,9 @@
 #define CUGO_RENDER_H
 
 #include <SDL2/SDL.h>
-#include "color_scheme.h"
+#include "point.h"
 #include "board.h"
-
-void SDL_SetRenderDrawColor(SDL_Color);
+#include "color_scheme.h"
 
 void render_init();
 void render_clear(SDL_Color);
@@ -15,8 +14,8 @@ void render_circle(int, int, int, SDL_Color);
 void render_text(const char*, uint_t, point_t, SDL_Color);
 void render_button(const SDL_Rect&, const char*, SDL_Color, SDL_Color);
 void render_logo();
-void render_board_piece_selector(board_t*, point_t, const color_scheme_t&);
-void render_board(board_t*, const color_scheme_t&);
+void render_board_piece_selector(board_t*, point_t, point_t, const color_scheme_t&);
+void render_board(board_t*, point_t, const color_scheme_t&);
 void render_deinit();
 
 #endif // CUGO_RENDER_H
