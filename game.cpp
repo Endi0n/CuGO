@@ -46,7 +46,7 @@ SDL_Rect menu_btn = {WINDOW_WIDTH - 120, 550, 100, 30};
 SDL_Rect new_game_btn = {30, 550, 100, 30};
 
 void handle_mouse_click(SDL_MouseButtonEvent mouse) {
-    if (menu_button_pressed(mouse, new_game_btn)) {
+    if (pieces_encircled && menu_button_pressed(mouse, new_game_btn)) {
         game_deinit();
         game_init();
         return;
