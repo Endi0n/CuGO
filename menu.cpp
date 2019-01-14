@@ -32,12 +32,6 @@ enum menu_state_e {
 
 menu_state_e menu_state = DEFAULT;
 
-// Main buttons
-const SDL_Rect play_btn = {200, 150, 400, 50};
-const SDL_Rect customize_btn = {200, 230, 400, 50};
-const SDL_Rect rules_btn = {200, 310, 400, 50};
-const SDL_Rect reset_btn = {200, 390, 400, 50};
-
 // Customization menu buttons
 const SDL_Rect size_l_btn = {415, 152, 20, 25};
 const SDL_Rect size_m_btn = {485, 152, 20, 25};
@@ -81,6 +75,10 @@ bool menu_button_pressed(SDL_MouseButtonEvent mouse, SDL_Rect button) {
         mouse.x >= button.x && mouse.x <= button.x + button.w
         && mouse.y >= button.y && mouse.y <= button.y + button.h
     );
+}
+
+SDL_Rect menu_button_position(uint_t index) {
+    return {200, 150 + 80 * (int)index, 400, 50};
 }
 
 void menu_handle_mouse_click_customize(SDL_MouseButtonEvent mouse) {
@@ -139,18 +137,8 @@ void menu_handle_mouse_click(SDL_MouseButtonEvent mouse) {
         menu_handle_mouse_click_customize(mouse);
         return;
     }
-
-    if (menu_button_pressed(mouse, customize_btn)) {
-        menu_state = CUSTOMIZE;
-        return;
-    }
-
-    if(menu_button_pressed(mouse, rules_btn)) {
-        menu_state = RULES;
-        return;
-    }
     
-    if(menu_button_pressed(mouse, play_btn)) {
+    if (menu_button_pressed(mouse, menu_button_position(0))) {
         if (!game_inited) {
             game_inited = true;
             game_init();
@@ -159,7 +147,17 @@ void menu_handle_mouse_click(SDL_MouseButtonEvent mouse) {
         return;
     }
 
-    if(game_started() && menu_button_pressed(mouse, reset_btn)) {
+    if (menu_button_pressed(mouse, menu_button_position(1))) {
+        menu_state = CUSTOMIZE;
+        return;
+    }
+
+    if(menu_button_pressed(mouse, menu_button_position(2))) {
+        menu_state = RULES;
+        return;
+    }
+
+    if(game_started() && menu_button_pressed(mouse, menu_button_position(3))) {
         if (!game_over()) {
             bool confirm = confirm_action(
                 "The current game session will be lost.\n\n"
@@ -183,14 +181,14 @@ void render_menu() {
     const SDL_Color btn_color = {255, 255, 255};
 
     const char *play = !game_over() ? !game_started() ? "Play" : "Resume" : "Review";
-    render_button(play_btn, play, color_scheme.buttons_background, btn_color);
+    render_button(menu_button_position(0), play, color_scheme.buttons_background, btn_color);
 
-    render_button(customize_btn, "Customize", color_scheme.buttons_background, btn_color);
-    render_button(rules_btn, "Rules", color_scheme.buttons_background, btn_color);
+    render_button(menu_button_position(1), "Customize", color_scheme.buttons_background, btn_color);
+    render_button(menu_button_position(2), "Rules", color_scheme.buttons_background, btn_color);
 
     if (game_started()) {
         const char* msg = game_over() ? "New Game" : "Cancel Game";
-        render_button(reset_btn, msg, color_scheme.buttons_background, btn_color);
+        render_button(menu_button_position(3), msg, color_scheme.buttons_background, btn_color);
     }
 }
 
