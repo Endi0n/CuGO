@@ -1,7 +1,7 @@
 #include <SDL2/SDL.h>
+
 #include "menu.h"
 #include "dimensions.h"
-#include "color_scheme.h"
 #include "game.h"
 #include "render.h"
 
@@ -59,17 +59,14 @@ bool confirm_action(const char *msg) {
     };
 
     const SDL_MessageBoxData messageboxdata = {
-        SDL_MESSAGEBOX_WARNING,
-        NULL,
-        "",
-        msg,
-        sizeof(buttons) / sizeof(SDL_MessageBoxButtonData),
-        buttons,
+        SDL_MESSAGEBOX_WARNING, NULL, "", msg,
+        sizeof(buttons) / sizeof(SDL_MessageBoxButtonData), buttons,
         NULL
     };
 
     int button_id;
     SDL_ShowMessageBox(&messageboxdata, &button_id);
+
     return (button_id > 0);
 }
 
@@ -77,8 +74,8 @@ bool game_inited = false;
 
 bool menu_button_pressed(SDL_MouseButtonEvent mouse, SDL_Rect button) {
     return (
-        mouse.x >= button.x && mouse.x <= button.x + button.w
-        && mouse.y >= button.y && mouse.y <= button.y + button.h
+        mouse.x >= button.x && mouse.x <= button.x + button.w &&
+        mouse.y >= button.y && mouse.y <= button.y + button.h
     );
 }
 

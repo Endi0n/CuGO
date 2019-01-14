@@ -22,6 +22,5 @@ int main(int argv, char **args) {
 
     sound_deinit();
     render_deinit();
-    
     return 0;
 }

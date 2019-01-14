@@ -1,10 +1,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
-
+#include "render.h"
 #include "dimensions.h"
-#include "color_scheme.h"
-#include "board.h"
-#include "list_point.h"
 
 void SDL_SetRenderDrawColor(SDL_Renderer *renderer, SDL_Color color) {
     SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
