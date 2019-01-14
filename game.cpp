@@ -8,6 +8,7 @@
 
 board_t *board;
 point_t board_offset;
+bool suicidal_place;
 int pieces_encircled;
 
 void game_init() {
@@ -62,7 +63,7 @@ void handle_mouse_click(SDL_MouseButtonEvent mouse) {
 
     if (board->moves < board->size * 2) {
         // Initial placing
-        if (board_place_piece(board, board_position(mouse), true) && menu_sound())
+        if (board_place_piece(board, board_position(mouse), menu_prevent_suicide()) && menu_sound())
             sound_play_place_piece();
     } else {
         // Moves
@@ -81,7 +82,15 @@ void handle_mouse_click(SDL_MouseButtonEvent mouse) {
              sound_play_place_piece();
     }
 
-    if ((pieces_encircled = board_player_defeated(board, board_current_player(board))) && menu_sound())
+    if (board->moves <= board->size * 2 && !menu_prevent_suicide()) {
+        pieces_encircled = board_player_defeated(board, board_opponent(board));
+        suicidal_place = pieces_encircled ? true : false;
+    }
+
+    if (!suicidal_place)
+        pieces_encircled = board_player_defeated(board, board_current_player(board));
+
+    if (pieces_encircled && menu_sound())
         sound_play_tada();
 }
 
@@ -99,7 +108,7 @@ void render_turn_info(board_t *board, const color_scheme_t &color_scheme) {
     } else {
         won[9] = pieces_encircled + '0';
         msg = won;
-        player = board_opponent(board);
+        player = suicidal_place ? board_current_player(board) : board_opponent(board);
     }
     
     render_circle(12, {30, 30}, color_scheme.player_piece_colors[player]);

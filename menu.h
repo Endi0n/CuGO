@@ -12,6 +12,7 @@ bool menu_visible(bool);
 color_scheme_t menu_color_scheme();
 uint_t menu_board_size();
 bool menu_sound();
+bool menu_prevent_suicide();
 
 bool menu_button_pressed(SDL_MouseButtonEvent, SDL_Rect);
 
