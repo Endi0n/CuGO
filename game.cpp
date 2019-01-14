@@ -62,7 +62,7 @@ void handle_mouse_click(SDL_MouseButtonEvent mouse) {
 
     if (board->moves < board->size * 2) {
         // Initial placing
-        if (board_place_piece(board, board_position(mouse)) && menu_sound())
+        if (board_place_piece(board, board_position(mouse), true) && menu_sound())
             sound_play_place_piece();
     } else {
         // Moves

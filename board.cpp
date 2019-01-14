@@ -95,12 +95,13 @@ bool board_suicidal_place(board_t *board, point_t pos) {
     return (number_of_pieces_encircled != 0);
 }
 
-bool board_place_piece(board_t *board, point_t pos) {
+bool board_place_piece(board_t *board, point_t pos, bool prevent_suicide) {
     if (!board_valid_point(board, pos)) return false;
 
     if (list_contains(board->player1_pieces, pos)
         || list_contains(board->player2_pieces, pos)
-        || board_suicidal_place(board, pos)) return false;
+        || (prevent_suicide && board_suicidal_place(board, pos)))
+            return false;
 
     list_append(board_current_player_pieces(board), pos);
     board->moves++;
