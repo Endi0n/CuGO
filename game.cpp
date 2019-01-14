@@ -62,7 +62,7 @@ void handle_mouse_click(SDL_MouseButtonEvent mouse) {
 
     if (board->moves < board->size * 2) {
         // Initial placing
-        if (board_place_piece(board, board_position(mouse)))
+        if (board_place_piece(board, board_position(mouse)) && menu_sound())
             sound_play_place_piece();
     } else {
         // Moves
@@ -77,11 +77,11 @@ void handle_mouse_click(SDL_MouseButtonEvent mouse) {
         
         piece_selected = false;
         
-        if(board_move_piece(board, piece, board_position(mouse)))
+        if(board_move_piece(board, piece, board_position(mouse)) && menu_sound())
              sound_play_place_piece();
     }
 
-    if ((pieces_encircled = board_player_defeated(board)))
+    if ((pieces_encircled = board_player_defeated(board)) && menu_sound())
         sound_play_tada();
 }
 
@@ -119,15 +119,15 @@ void render_turn_info(board_t *board, const color_scheme_t &color_scheme) {
 }
 
 void game_loop(SDL_Event window_event) {
-    render_clear({204, 223, 255});
+    render_clear(menu_color_scheme().background);
     render_logo();
 
     render_board(board, board_offset, menu_color_scheme());
 
-    render_button(menu_btn, "Menu", {137, 164, 255}, {255, 255, 255});
+    render_button(menu_btn, "Menu", menu_color_scheme().buttons_background, {255, 255, 255});
 
     if (pieces_encircled)
-        render_button(new_game_btn, "New Game", {137, 164, 255}, {255, 255, 255});
+        render_button(new_game_btn, "New Game", menu_color_scheme().buttons_background, {255, 255, 255});
 
     if (piece_selected) render_board_piece_selector(board, piece, board_offset, menu_color_scheme());
 
