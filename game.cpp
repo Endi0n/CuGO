@@ -27,7 +27,7 @@ void game_deinit() {
 }
 
 bool game_started() { return (board ? board->player1_pieces->length : false); }
-bool game_over() { return pieces_encircled; }
+bool game_ended() { return game_started() && pieces_encircled; }
 
 point_t board_position(SDL_MouseButtonEvent mouse) {
     return {
