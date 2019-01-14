@@ -36,10 +36,10 @@ inline bool board_valid_point(board_t *board, point_t pos) {
     );
 }
 
-int board_group_encircled(board_t *board, list_point_t *visited) {
+int board_group_encircled(board_t *board, player_e player, list_point_t *visited) {
     // Oc
-    list_point_t *list1 = board_current_player_pieces(board),
-        *list2 = board_opponent_pieces(board);
+    list_point_t *list1 = board_player_pieces(board, player),
+        *list2 = board_player_pieces(board, (player == PLAYER1) ? PLAYER2 : PLAYER1);
 
     list_node_point_t *start_node = visited->last;
 
@@ -63,7 +63,7 @@ int board_group_encircled(board_t *board, list_point_t *visited) {
     return (can_move ? 0 : (visited->length - last_length + 1));
 }
 
-int board_player_defeated(board_t *board) {
+int board_player_defeated(board_t *board, player_e player) {
     // Oc
     list_point_t *visited;
     list_init(visited);
@@ -71,12 +71,12 @@ int board_player_defeated(board_t *board) {
     uint_t number_of_pieces_encircled = 0;
 
     // Check all groups of pieces
-    for (list_node_point_t *node = board_current_player_pieces(board)->first; node; node = node->next) {
+    for (list_node_point_t *node = board_player_pieces(board, player)->first; node; node = node->next) {
         if (list_contains(visited, node->value)) continue;
 
         list_append(visited, node->value);
 
-        number_of_pieces_encircled += board_group_encircled(board, visited);
+        number_of_pieces_encircled += board_group_encircled(board, player, visited);
     }
 
     list_delete(visited);
@@ -89,7 +89,7 @@ bool board_suicidal_place(board_t *board, point_t pos) {
     list_init(visited);
 
     list_append(visited, pos);
-    uint_t number_of_pieces_encircled = board_group_encircled(board, visited);
+    uint_t number_of_pieces_encircled = board_group_encircled(board, board_current_player(board), visited);
 
     list_delete(visited);
     return (number_of_pieces_encircled != 0);

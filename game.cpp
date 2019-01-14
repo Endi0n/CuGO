@@ -81,7 +81,7 @@ void handle_mouse_click(SDL_MouseButtonEvent mouse) {
              sound_play_place_piece();
     }
 
-    if ((pieces_encircled = board_player_defeated(board)) && menu_sound())
+    if ((pieces_encircled = board_player_defeated(board, board_current_player(board))) && menu_sound())
         sound_play_tada();
 }
 
