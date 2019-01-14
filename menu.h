@@ -4,13 +4,14 @@
 #include <SDL2/SDL.h>
 #include "color_scheme.h"
 
-typedef unsigned int uint;
+typedef unsigned int uint_t;
 
 bool menu_visible();
 bool menu_visible(bool);
 
-uint menu_board_size();
 color_scheme_t menu_color_scheme();
+uint_t menu_board_size();
+bool menu_sound();
 
 bool menu_button_pressed(SDL_MouseButtonEvent, SDL_Rect);
 
