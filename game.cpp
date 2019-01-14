@@ -1,15 +1,16 @@
 #include <SDL2/SDL.h>
+
+#include "game.h"
 #include "dimensions.h"
-#include "point.h"
 #include "board.h"
-#include "menu.h"
 #include "render.h"
+#include "menu.h"
 #include "sound.h"
 
 board_t *board;
 point_t board_offset;
 bool suicidal_place;
-int pieces_encircled;
+uint_t pieces_encircled;
 
 void game_init() {
     pieces_encircled = 0;
@@ -24,13 +25,8 @@ void game_deinit() {
     board_delete(board);
 }
 
-bool game_started() {
-    return (board ? board->player1_pieces->length : false);
-}
-
-bool game_over() {
-    return pieces_encircled;
-}
+bool game_started() { return (board ? board->player1_pieces->length : false); }
+bool game_over() { return pieces_encircled; }
 
 point_t board_position(SDL_MouseButtonEvent mouse) {
     // Ot
@@ -138,7 +134,8 @@ void game_loop(SDL_Event window_event) {
     if (pieces_encircled)
         render_button(new_game_btn, "New Game", menu_color_scheme().buttons_background, {255, 255, 255});
 
-    if (piece_selected) render_board_piece_selector(board, piece, board_offset, menu_color_scheme());
+    if (piece_selected)
+        render_board_piece_selector(board, piece, board_offset, menu_color_scheme());
 
     render_turn_info(board, menu_color_scheme());
 

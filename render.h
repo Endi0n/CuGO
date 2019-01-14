@@ -2,7 +2,6 @@
 #define CUGO_RENDER_H
 
 #include <SDL2/SDL.h>
-#include "point.h"
 #include "board.h"
 #include "color_scheme.h"
 

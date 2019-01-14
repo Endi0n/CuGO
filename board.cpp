@@ -1,6 +1,4 @@
 #include "board.h"
-#include "point.h"
-#include "list_point.h"
 
 const point_t piece_move_directions[] = {
     {0, -1},
@@ -36,7 +34,7 @@ inline bool board_valid_point(board_t *board, point_t pos) {
     );
 }
 
-int board_group_encircled(board_t *board, player_e player, list_point_t *visited) {
+uint_t board_group_encircled(board_t *board, player_e player, list_point_t *visited) {
     // Oc
     list_point_t *list1 = board_player_pieces(board, player),
         *list2 = board_player_pieces(board, (player == PLAYER1) ? PLAYER2 : PLAYER1);
@@ -63,7 +61,7 @@ int board_group_encircled(board_t *board, player_e player, list_point_t *visited
     return (can_move ? 0 : (visited->length - last_length + 1));
 }
 
-int board_player_defeated(board_t *board, player_e player) {
+uint_t board_player_defeated(board_t *board, player_e player) {
     // Oc
     list_point_t *visited;
     list_init(visited);
