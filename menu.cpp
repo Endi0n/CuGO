@@ -1,4 +1,5 @@
 #include <SDL2/SDL.h>
+#include <fstream>
 
 #include "menu.h"
 #include "dimensions.h"
@@ -12,8 +13,7 @@ bool menu_visible(bool visible) { menu_show = visible; return visible; }
 
 // Color scheme getter and setter
 int color_scheme_id = 0;
-color_scheme_t color_scheme = color_schemes[0];
-color_scheme_t menu_color_scheme() { return color_scheme; }
+color_scheme_t menu_color_scheme() { return color_schemes[color_scheme_id]; }
 
 // Sound active getter and setter
 bool sound = true;
@@ -35,6 +35,19 @@ enum menu_state_e {
 };
 
 menu_state_e menu_state = DEFAULT;
+
+void menu_init() {
+    std::ifstream fin("settings");
+    if (!fin.good()) return;
+    fin >> color_scheme_id >> sound >> board_size >> prevent_suicide;
+    fin.close();
+}
+
+void menu_deinit() {
+    std::ofstream fout("settings");
+    fout << color_scheme_id << ' ' << sound << ' ' << board_size << ' ' << prevent_suicide;
+    fout.close();
+}
 
 // Customization menu buttons
 const SDL_Rect sound_btn = {446, 151, 30, 25};
@@ -121,7 +134,6 @@ void menu_handle_mouse_click_customize(SDL_MouseButtonEvent mouse) {
         color_scheme_id--;
         if (color_scheme_id < 0)
             color_scheme_id = max_color_scheme_id;
-        color_scheme = color_schemes[color_scheme_id];
         return;
     }
 
@@ -129,7 +141,6 @@ void menu_handle_mouse_click_customize(SDL_MouseButtonEvent mouse) {
         color_scheme_id++;
         if (color_scheme_id > max_color_scheme_id)
             color_scheme_id = 0;
-        color_scheme = color_schemes[color_scheme_id];
         return;
     }
 }
@@ -188,14 +199,14 @@ void render_menu() {
     const SDL_Color btn_color = {255, 255, 255};
 
     const char *play = !game_over() ? !game_started() ? "Play" : "Resume" : "Review";
-    render_button(menu_button_position(0), play, color_scheme.buttons_background, btn_color);
+    render_button(menu_button_position(0), play, menu_color_scheme().buttons_background, btn_color);
 
-    render_button(menu_button_position(1), "Customize", color_scheme.buttons_background, btn_color);
-    render_button(menu_button_position(2), "Rules", color_scheme.buttons_background, btn_color);
+    render_button(menu_button_position(1), "Customize", menu_color_scheme().buttons_background, btn_color);
+    render_button(menu_button_position(2), "Rules", menu_color_scheme().buttons_background, btn_color);
 
     if (game_started()) {
         const char* msg = game_over() ? "New Game" : "Cancel Game";
-        render_button(menu_button_position(3), msg, color_scheme.buttons_background, btn_color);
+        render_button(menu_button_position(3), msg, menu_color_scheme().buttons_background, btn_color);
     }
 }
 
@@ -203,22 +214,22 @@ void render_customize() {
     const SDL_Color btn_color = {255, 255, 255};
 
     render_text("Sound:", 18, {340, 150}, {0, 0, 0});
-    render_button(sound_btn, sound ? "X" : "", color_scheme.buttons_background, btn_color);
+    render_button(sound_btn, sound ? "X" : "", menu_color_scheme().buttons_background, btn_color);
 
     render_text("Board size:", 18, {305, 200}, {0, 0, 0});
     render_rect({445, 202, 30, 25}, {255, 255, 255});
-    render_button(size_l_btn, "-", color_scheme.buttons_background, btn_color);
-    render_button(size_m_btn, "+", color_scheme.buttons_background, btn_color);
+    render_button(size_l_btn, "-", menu_color_scheme().buttons_background, btn_color);
+    render_button(size_m_btn, "+", menu_color_scheme().buttons_background, btn_color);
     char size[] = "*";
     size[0] = board_size + '0';
     render_text(size, 15, {455, 202}, {0, 0, 0});
 
     render_text("Prevent suicidal moves:", 18, {285, 250}, {0, 0, 0});
-    render_button(suicide_btn, prevent_suicide ? "X" : "", color_scheme.buttons_background, btn_color);
+    render_button(suicide_btn, prevent_suicide ? "X" : "", menu_color_scheme().buttons_background, btn_color);
 
     render_text("Theme:", 18, {340, 300}, {0, 0, 0});
-    render_button(theme_l_btn, "<", color_scheme.buttons_background, btn_color);
-    render_button(theme_r_btn, ">", color_scheme.buttons_background, btn_color);
+    render_button(theme_l_btn, "<", menu_color_scheme().buttons_background, btn_color);
+    render_button(theme_r_btn, ">", menu_color_scheme().buttons_background, btn_color);
 
     static board_t *board = NULL;
     if (!board) {
@@ -227,7 +238,7 @@ void render_customize() {
         board_place_piece(board, {1, 1}, false);
     }
 
-    render_board(board, {360, 365}, color_scheme);
+    render_board(board, {360, 365}, menu_color_scheme());
 }
 
 void render_rules() {
@@ -253,7 +264,7 @@ void render_rules() {
 }
 
 void menu_loop(SDL_Event window_event) {
-    render_clear(color_scheme.background);
+    render_clear(menu_color_scheme().background);
     render_logo();
 
     switch (menu_state) {
@@ -269,7 +280,7 @@ void menu_loop(SDL_Event window_event) {
     }
 
     if (menu_state != DEFAULT)
-        render_button(back_btn, "Back", color_scheme.buttons_background, {255, 255, 255});
+        render_button(back_btn, "Back", menu_color_scheme().buttons_background, {255, 255, 255});
 
     if (window_event.type == SDL_MOUSEBUTTONDOWN)
         menu_handle_mouse_click(window_event.button);

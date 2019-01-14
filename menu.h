@@ -6,6 +6,9 @@
 
 typedef unsigned int uint_t;
 
+void menu_init();
+void menu_deinit();
+
 bool menu_visible();
 bool menu_visible(bool visible);
 
