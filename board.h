@@ -35,6 +35,6 @@ bool board_place_piece(board_t*, point_t, bool);
 bool board_move_piece(board_t*, point_t src, point_t dst);
 void board_potential_moves(board_t*, point_t, list_point_t*);
 
-int board_player_defeated(board_t*);
+int board_player_defeated(board_t*, player_e player);
 
 #endif // CUGO_BOARD_H
