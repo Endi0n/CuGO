@@ -6,6 +6,7 @@
 #include "sound.h"
 
 int main(int argv, char **args) {
+    menu_init();
     render_init();
     sound_init();
 
@@ -22,5 +23,6 @@ int main(int argv, char **args) {
 
     sound_deinit();
     render_deinit();
+    menu_deinit();
     return 0;
 }
