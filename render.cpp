@@ -65,14 +65,16 @@ void render_rect(const SDL_Rect &rect, SDL_Color color) {
     SDL_RenderFillRect(renderer, &rect);
 }
 
-void render_circle(int cx, int cy, int radius, SDL_Color color) {
+void render_circle(int radius, point_t center, SDL_Color color) {
     SDL_SetRenderDrawColor(renderer, color);
 
-    int x = radius - 1;
-    int y = 0;
-    int dx = 1;
-    int dy = 1;
-    int err = dx - (radius << 1);
+    int cx = center.x,
+        cy = center.y,
+        x = radius - 1,
+        y = 0,
+        dx = 1,
+        dy = 1,
+        err = dx - (radius << 1);
 
     while (x >= y) {
         SDL_Point points[] = {
@@ -151,9 +153,11 @@ void render_board_grid(board_t *board, point_t offset, const color_scheme_t &col
 void render_board_piece(point_t piece, point_t offset, SDL_Color color) {
     // Ot
     render_circle(
-        offset.x + BOARD_CELL_SIZE * piece.x + BOARD_CELL_SIZE / 2,
-        offset.y + BOARD_CELL_SIZE * piece.y + BOARD_CELL_SIZE / 2,
         BOARD_CELL_SIZE / 3,
+        {
+            .x = offset.x + BOARD_CELL_SIZE * piece.x + BOARD_CELL_SIZE / 2,
+            .y = offset.y + BOARD_CELL_SIZE * piece.y + BOARD_CELL_SIZE / 2,
+        },
         color
     );
 }
@@ -165,9 +169,11 @@ void render_board_pieces(list_point_t *pieces, point_t offset, SDL_Color color) 
 
 void render_board_potential_piece(point_t piece, point_t offset, SDL_Color color) {
     render_circle(
-        offset.x + BOARD_CELL_SIZE * piece.x + BOARD_CELL_SIZE / 2,
-        offset.y + BOARD_CELL_SIZE * piece.y + BOARD_CELL_SIZE / 2,
         BOARD_CELL_SIZE / 10,
+        {
+            .x = offset.x + BOARD_CELL_SIZE * piece.x + BOARD_CELL_SIZE / 2,
+            .y = offset.y + BOARD_CELL_SIZE * piece.y + BOARD_CELL_SIZE / 2,
+        },
         color
     );
 }
