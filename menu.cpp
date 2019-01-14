@@ -240,7 +240,7 @@ void render_rules() {
     };
 
     for (int i = 0; i < sizeof(rules) / sizeof(char*); i++) {
-        render_circle(offset_x + 15, 167 + 18 * i, 3, {0, 0, 0});
+        render_circle(3, {offset_x + 15, 167 + 18 * i}, {0, 0, 0});
         render_text(rules[i], 14, {offset_x + 25, 157 + 18 * i}, {0, 0, 0});
     }
 }

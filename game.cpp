@@ -101,7 +101,7 @@ void render_turn_info(board_t *board, const color_scheme_t &color_scheme) {
         player = board_opponent(board);
     }
     
-    render_circle(30,  30, 12, color_scheme.player_piece_colors[player]);
+    render_circle(12, {30, 30}, color_scheme.player_piece_colors[player]);
     render_text(msg, 14, {50, 20}, {0, 0, 0, 0});
 
     render_text("No. of moves: ", 14, {WINDOW_WIDTH - 150, 20}, {0, 0, 0, 0});
