@@ -23,6 +23,10 @@ bool menu_sound() { return sound; }
 int board_size = 8;
 uint_t menu_board_size() { return board_size; }
 
+// Suicide check getter and setter
+bool prevent_suicide = true;
+bool menu_prevent_suicide() { return prevent_suicide; }
+
 // Menu state 
 enum menu_state_e {
     DEFAULT,
@@ -33,11 +37,12 @@ enum menu_state_e {
 menu_state_e menu_state = DEFAULT;
 
 // Customization menu buttons
-const SDL_Rect size_l_btn = {415, 152, 20, 25};
-const SDL_Rect size_m_btn = {485, 152, 20, 25};
-const SDL_Rect sound_btn = {446, 201, 30, 25};
-const SDL_Rect theme_l_btn = {438, 252, 20, 25};
-const SDL_Rect theme_r_btn = {463, 252, 20, 25};
+const SDL_Rect sound_btn = {446, 151, 30, 25};
+const SDL_Rect size_l_btn = {415, 202, 20, 25};
+const SDL_Rect size_m_btn = {485, 202, 20, 25};
+const SDL_Rect suicide_btn = {500, 251, 30, 25};
+const SDL_Rect theme_l_btn = {438, 302, 20, 25};
+const SDL_Rect theme_r_btn = {463, 302, 20, 25};
 
 // Misc buttons
 const SDL_Rect back_btn = {200, 500, 400, 50};
@@ -107,6 +112,11 @@ void menu_handle_mouse_click_customize(SDL_MouseButtonEvent mouse) {
 
     if (menu_button_pressed(mouse, sound_btn)) {
         sound ^= true;
+        return;
+    }
+
+    if (menu_button_pressed(mouse, suicide_btn)) {
+        prevent_suicide ^= true;
         return;
     }
 
@@ -195,19 +205,21 @@ void render_menu() {
 void render_customize() {
     const SDL_Color btn_color = {255, 255, 255};
 
-    render_text("Board size:", 18, {305, 150}, {0, 0, 0});
-    render_rect({445, 152, 30, 25}, {255, 255, 255});
-    render_button(size_l_btn, "-", color_scheme.buttons_background, btn_color);
-    render_button(size_m_btn, "+", color_scheme.buttons_background, btn_color);
-
-    char size[] = "*";
-    size[0] = board_size + '0';
-    render_text(size, 15, {455, 152}, {0, 0, 0});
-
-    render_text("Sound:", 18, {340, 200}, {0, 0, 0});
+    render_text("Sound:", 18, {340, 150}, {0, 0, 0});
     render_button(sound_btn, sound ? "X" : "", color_scheme.buttons_background, btn_color);
 
-    render_text("Theme:", 18, {340, 250}, {0, 0, 0});
+    render_text("Board size:", 18, {305, 200}, {0, 0, 0});
+    render_rect({445, 202, 30, 25}, {255, 255, 255});
+    render_button(size_l_btn, "-", color_scheme.buttons_background, btn_color);
+    render_button(size_m_btn, "+", color_scheme.buttons_background, btn_color);
+    char size[] = "*";
+    size[0] = board_size + '0';
+    render_text(size, 15, {455, 202}, {0, 0, 0});
+
+    render_text("Prevent suicidal moves:", 18, {285, 250}, {0, 0, 0});
+    render_button(suicide_btn, prevent_suicide ? "X" : "", color_scheme.buttons_background, btn_color);
+
+    render_text("Theme:", 18, {340, 300}, {0, 0, 0});
     render_button(theme_l_btn, "<", color_scheme.buttons_background, btn_color);
     render_button(theme_r_btn, ">", color_scheme.buttons_background, btn_color);
 
@@ -218,7 +230,7 @@ void render_customize() {
         board_place_piece(board, {1, 1}, false);
     }
 
-    render_board(board, {360, 330}, color_scheme);
+    render_board(board, {360, 365}, color_scheme);
 }
 
 void render_rules() {
