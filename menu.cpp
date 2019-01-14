@@ -102,7 +102,10 @@ void menu_handle_mouse_click_customize(SDL_MouseButtonEvent mouse) {
 
     if (game_started())
         if(menu_button_pressed(mouse, size_l_btn)
-        || menu_button_pressed(mouse, size_m_btn)) { warn(disabled); return; }
+        || menu_button_pressed(mouse, size_m_btn))  {
+            if (game_ended()) { game_inited = false; game_deinit(); }
+            else warn(disabled); return;
+        }
 
     if (menu_button_pressed(mouse, size_l_btn)) {
         if (board_size > 4) {
@@ -174,7 +177,7 @@ void menu_handle_mouse_click(SDL_MouseButtonEvent mouse) {
     }
 
     if(game_started() && menu_button_pressed(mouse, menu_button_position(3))) {
-        if (!game_over()) {
+        if (!game_ended()) {
             bool confirm = confirm_action(
                 "The current game session will be lost.\n\n"
                 "Are you sure you want to continue?"
@@ -196,14 +199,14 @@ void menu_handle_mouse_click(SDL_MouseButtonEvent mouse) {
 void render_menu() {
     const SDL_Color btn_color = {255, 255, 255};
 
-    const char *play = !game_over() ? !game_started() ? "Play" : "Resume" : "Review";
+    const char *play = !game_ended() ? !game_started() ? "Play" : "Resume" : "Review";
     render_button(menu_button_position(0), play, menu_color_scheme().buttons_background, btn_color);
 
     render_button(menu_button_position(1), "Customize", menu_color_scheme().buttons_background, btn_color);
     render_button(menu_button_position(2), "Rules", menu_color_scheme().buttons_background, btn_color);
 
     if (game_started()) {
-        const char* msg = game_over() ? "New Game" : "Cancel Game";
+        const char* msg = game_ended() ? "New Game" : "Cancel Game";
         render_button(menu_button_position(3), msg, menu_color_scheme().buttons_background, btn_color);
     }
 }
