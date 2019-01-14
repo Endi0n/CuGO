@@ -214,8 +214,8 @@ void render_customize() {
     static board_t *board = NULL;
     if (!board) {
         board = board_create(2);
-        board_place_piece(board, {0, 0});
-        board_place_piece(board, {1, 1});
+        board_place_piece(board, {0, 0}, false);
+        board_place_piece(board, {1, 1}, false);
     }
 
     render_board(board, {360, 330}, color_scheme);

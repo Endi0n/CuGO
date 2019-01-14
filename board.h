@@ -31,7 +31,7 @@ inline list_point_t* board_current_player_pieces(board_t *board)
 inline list_point_t* board_opponent_pieces(board_t *board)
     { return board_player_pieces(board, board_opponent(board)); }
 
-bool board_place_piece(board_t*, point_t);
+bool board_place_piece(board_t*, point_t, bool);
 bool board_move_piece(board_t*, point_t src, point_t dst);
 void board_potential_moves(board_t*, point_t, list_point_t*);
 
