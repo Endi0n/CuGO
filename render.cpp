@@ -68,43 +68,10 @@ void render_rect(const SDL_Rect &rect, SDL_Color color) {
 void render_circle(int radius, point_t center, SDL_Color color) {
     SDL_SetRenderDrawColor(renderer, color);
 
-    int cx = center.x,
-        cy = center.y,
-        x = radius - 1,
-        y = 0,
-        dx = 1,
-        dy = 1,
-        err = dx - (radius << 1);
-
-    while (x >= y) {
-        SDL_Point points[] = {
-            {cx + x, cy + y},
-            {cx - x, cy + y},
-
-            {cx + y, cy + x},
-            {cx - y, cy + x},
-
-            {cx - x, cy - y},
-            {cx + x, cy - y},
-
-            {cx - y, cy - x},
-            {cx + y, cy - x}
-        };
-
-        SDL_RenderDrawLines(renderer, points, sizeof(points) / sizeof(SDL_Point));
-
-        if (err <= 0) {
-            y++;
-            err += dy;
-            dy += 2;
-        }
-
-        if (err > 0) {
-            x--;
-            dx += 2;
-            err += dx - (radius << 1);
-        }
-    }
+    for(int x = -radius; x <= radius; x++)
+        for(int y = -radius; y <= radius; y++)
+            if(x * x + y * y < radius * radius + radius)
+                SDL_RenderDrawPoint(renderer, center.x + x, center.y + y);
 }
 
 void render_text(const char *text, uint_t size, point_t pos, SDL_Color color) {
