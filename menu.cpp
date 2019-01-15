@@ -83,8 +83,6 @@ bool confirm_action(const char *msg) {
     return (button_id > 0);
 }
 
-bool game_inited = false;
-
 bool menu_button_pressed(SDL_MouseButtonEvent mouse, SDL_Rect button) {
     return (
         mouse.x >= button.x && mouse.x <= button.x + button.w &&
@@ -109,7 +107,7 @@ void menu_handle_mouse_click_customize(SDL_MouseButtonEvent mouse) {
 
     if (menu_button_pressed(mouse, size_l_btn)) {
         if (board_size > 4) {
-            if (game_inited) { game_inited = false; game_deinit(); }
+            if (game_inited()) game_deinit();
             board_size--;
         }
         return;
@@ -117,7 +115,7 @@ void menu_handle_mouse_click_customize(SDL_MouseButtonEvent mouse) {
 
     if (menu_button_pressed(mouse, size_m_btn)) {
         if (board_size < 8) {
-            if (game_inited) { game_inited = false; game_deinit(); }
+            if (game_inited()) game_deinit();
             board_size++;
         }
         return;
@@ -160,10 +158,7 @@ void menu_handle_mouse_click(SDL_MouseButtonEvent mouse) {
     }
     
     if (menu_button_pressed(mouse, menu_button_position(0))) {
-        if (!game_inited) {
-            game_inited = true;
-            game_init();
-        }
+        if (!game_inited()) game_init();
         menu_visible(false);
         return;
     }
@@ -187,7 +182,6 @@ void menu_handle_mouse_click(SDL_MouseButtonEvent mouse) {
 
             if (!confirm) return;
 
-            game_inited = false;
             game_deinit();
             return;
         }
