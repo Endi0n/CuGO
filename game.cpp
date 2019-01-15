@@ -11,6 +11,8 @@ board_t *board;
 point_t board_offset;
 bool suicidal_place;
 uint_t pieces_encircled;
+point_t piece_selected;
+bool is_piece_selected;
 
 void game_init() {
     pieces_encircled = 0;
@@ -20,6 +22,7 @@ void game_init() {
         (int)(WINDOW_HEIGHT - board->size * BOARD_CELL_SIZE) / 2 + 20
     };
     suicidal_place = false;
+    is_piece_selected = false;
 }
 
 void game_deinit() {
@@ -38,9 +41,6 @@ point_t board_position(SDL_MouseButtonEvent mouse) {
     };
 }
 
-point_t piece;
-bool piece_selected = false;
-
 SDL_Rect menu_btn = {WINDOW_WIDTH - 120, 550, 100, 30};
 SDL_Rect new_game_btn = {30, 550, 100, 30};
 
@@ -58,26 +58,27 @@ void handle_mouse_click(SDL_MouseButtonEvent mouse) {
 
     if (pieces_encircled) return;
 
+    bool valid_placement = false;
+
     if (board->moves < board->size * 2) {
         // Initial placing
-        if (board_place_piece(board, board_position(mouse), menu_prevent_suicide()) && menu_sound())
-            sound_play_place_piece();
+        valid_placement = board_place_piece(board, board_position(mouse), menu_prevent_suicide());
     } else {
         // Moves
-        if (!piece_selected) {
+        if (!is_piece_selected) {
             point_t pos = board_position(mouse);
             if (list_contains(board_current_player_pieces(board), pos)) {
-                piece = pos;
-                piece_selected = true;
+                piece_selected = pos;
+                is_piece_selected = true;
             }
             return;
         }
         
-        piece_selected = false;
-        
-        if(board_move_piece(board, piece, board_position(mouse)) && menu_sound())
-             sound_play_place_piece();
+        is_piece_selected = false;
+        valid_placement = board_move_piece(board, piece_selected, board_position(mouse));
     }
+
+    if (!valid_placement) return;
 
     if (!menu_prevent_suicide() && board->moves <= board->size * 2) {
         pieces_encircled = board_player_defeated(board, board_opponent(board));
@@ -87,8 +88,11 @@ void handle_mouse_click(SDL_MouseButtonEvent mouse) {
     if (!suicidal_place)
         pieces_encircled = board_player_defeated(board, board_current_player(board));
 
-    if (pieces_encircled && menu_sound())
-        sound_play_tada();
+    if (menu_sound()) {
+        sound_play_place_piece();
+        if (pieces_encircled)
+            sound_play_tada();
+    }
 }
 
 void render_turn_info(board_t *board, const color_scheme_t &color_scheme) {
@@ -135,8 +139,8 @@ void game_loop(SDL_Event window_event) {
     if (pieces_encircled)
         render_button(new_game_btn, "New Game", menu_color_scheme().buttons_background, {255, 255, 255});
 
-    if (piece_selected)
-        render_board_piece_selector(board, board_offset, piece, menu_color_scheme());
+    if (is_piece_selected)
+        render_board_piece_selector(board, board_offset, piece_selected, menu_color_scheme());
 
     render_turn_info(board, menu_color_scheme());
 
