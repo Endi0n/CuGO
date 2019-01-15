@@ -38,6 +38,46 @@ point_t board_position(SDL_MouseButtonEvent mouse) {
     };
 }
 
+void perform_ai_move() {
+    if (pieces_encircled) return;
+    
+    if (board->moves < board->size * 2) {
+        point_t piece;
+        do {
+            piece.x = rand() % board->size;
+            piece.y = rand() % board->size;
+        } while (!board_place_piece(board, piece, true));
+        if (menu_sound())
+            sound_play_place_piece();
+    } else {
+        point_t piece, new_pos;
+        list_point_t *potential_moves;
+        list_init(potential_moves);
+
+        do {
+            uint_t index = rand() % board->size;
+            list_node_point_t *node = board_current_player_pieces(board)->first;
+            for (; index > 0; index--) node = node->next;
+            piece = node->value;
+            board_potential_moves(board, piece, potential_moves);
+        } while (!potential_moves->length);
+
+        uint_t index = rand() % potential_moves->length;
+        list_node_point_t *node = potential_moves->first;
+        for (; index > 0; index--) node = node->next;
+        new_pos = node->value;
+        board_move_piece(board, piece, new_pos);
+        
+        if (menu_sound())
+            sound_play_place_piece();
+    }
+    
+    pieces_encircled = board_player_defeated(board, board_current_player(board));
+
+    if (pieces_encircled && menu_sound())
+        sound_play_tada();
+}
+
 point_t piece;
 bool piece_selected = false;
 
@@ -89,6 +129,8 @@ void handle_mouse_click(SDL_MouseButtonEvent mouse) {
 
     if (pieces_encircled && menu_sound())
         sound_play_tada();
+    
+    perform_ai_move();
 }
 
 void render_turn_info(board_t *board, const color_scheme_t &color_scheme) {
